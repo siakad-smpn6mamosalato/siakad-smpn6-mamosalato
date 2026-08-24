@@ -3201,7 +3201,7 @@
         // PENGATURAN DATABASE UNTUK HOSTING INTERNET (ONLINE PUBLIK)
         // =====================================================================
         const firebaseConfig = {
-  apiKey: "AIzaSyAArJD8jaaTf6sr2ERe7kOCKspGEhSTMmY",
+  apiKey: "AIzaSyAARJD8jaaTf6sr2ERe7k0CKspGEhSTMmY",
   authDomain: "siakad-smpn6-mamosalato-c6915.firebaseapp.com",
   projectId: "siakad-smpn6-mamosalato-c6915",
   storageBucket: "siakad-smpn6-mamosalato-c6915.firebasestorage.app",
@@ -3211,7 +3211,7 @@
         
         // Konfigurasi sistem (Gunakan string eksplisit saat dihosting)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'siakad-smpn6-mamosalato';
-        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : JSON.stringify(myFirebaseConfig);
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : JSON.stringify(firebaseConfig);
         
         window.initCloud = async function() {
             if (!firebaseConfigStr) {
@@ -3220,8 +3220,8 @@
             }
 
             try {
-                const firebaseConfig = JSON.parse(firebaseConfigStr);
-                const app = initializeApp(firebaseConfig);
+                const configToUse = JSON.parse(firebaseConfigStr);
+                const app = initializeApp(configToUse);
                 const db = getFirestore(app);
                 const auth = getAuth(app);
 
