@@ -161,10 +161,18 @@
                 </div>
 
                 <li id="li-admin">
-                    <a href="#" onclick="navigate('admin')" id="nav-admin" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent">
-                        <i class="fas fa-users-cog w-5"></i> Tenaga Admin
-                    </a>
+                    <button onclick="toggleSubMenu('adminSubMenu', 'adminChevron')" class="w-full flex items-center justify-between px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent focus:outline-none">
+                        <span class="flex items-center gap-3"><i class="fas fa-users-cog w-5"></i> Tenaga Admin</span>
+                        <i id="adminChevron" class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
                 </li>
+                <div id="adminSubMenu" class="hidden bg-blue-900/30 py-1 mt-1">
+                    <li><a href="#" onclick="navigate('admin_aktif')" id="nav-admin_aktif" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-orange-400 hover:bg-blue-800 hover:text-orange-300 transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-user-check w-4"></i> Admin Aktif</a></li>
+                    <li><a href="#" onclick="navigate('admin_mutasi')" id="nav-admin_mutasi" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-truck-moving w-4"></i> Mutasi (Pindah)</a></li>
+                    <li><a href="#" onclick="navigate('admin_pensiun')" id="nav-admin_pensiun" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-medal w-4"></i> Purna Tugas (Pensiun)</a></li>
+                    <li><a href="#" onclick="navigate('admin_berhenti')" id="nav-admin_berhenti" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-user-times w-4"></i> Berhenti / Keluar</a></li>
+                </div>
+
                 <li id="li-wali_kelas">
                     <a href="#" onclick="navigate('wali_kelas')" id="nav-wali_kelas" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent">
                         <i class="fas fa-clipboard-check w-5"></i> Wali Kelas
@@ -484,7 +492,7 @@
             </div>
             <div class="p-5 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-xl">
                 <button onclick="closeModal('personModal')" class="px-5 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium">Batal</button>
-                <button onclick="savePerson()" class="px-5 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium">Simpan Data</button>
+                <button id="btnSavePerson" onclick="savePerson()" class="px-5 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium">Simpan Data</button>
             </div>
         </div>
     </div>
@@ -626,15 +634,15 @@
         </div>
     </div>
 
-    <!-- Modal Status Guru -->
-    <div id="guruActionModal" class="fixed inset-0 modal-overlay hidden z-[55] flex items-center justify-center p-4">
+    <!-- Modal Status Pegawai (Guru/Admin) -->
+    <div id="pegawaiActionModal" class="fixed inset-0 modal-overlay hidden z-[55] flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto flex flex-col fade-in">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-orange-50 rounded-t-xl">
                 <div>
-                    <h3 class="text-lg font-semibold text-orange-900">Proses Status Guru</h3>
-                    <p id="guruModalSubtitle" class="text-sm text-orange-600 mt-1">Nama Guru</p>
+                    <h3 class="text-lg font-semibold text-orange-900">Proses Status Pegawai</h3>
+                    <p id="pegawaiModalSubtitle" class="text-sm text-orange-600 mt-1">Nama Pegawai</p>
                 </div>
-                <button onclick="closeModal('guruActionModal')" class="text-gray-400 hover:text-red-500 transition-colors">
+                <button onclick="closeModal('pegawaiActionModal')" class="text-gray-400 hover:text-red-500 transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -642,32 +650,32 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Ubah Status Menjadi</label>
-                        <select id="guruActionType" onchange="updateGuruActionOptions()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium text-gray-700">
-                            <option value="Aktif">Aktif (Mengajar)</option>
+                        <select id="pegawaiActionType" onchange="updatePegawaiActionOptions()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium text-gray-700">
+                            <option value="Aktif">Aktif (Bertugas)</option>
                             <option value="Mutasi">Mutasi (Pindah Tugas)</option>
                             <option value="Pensiun">Pensiun (Purna Tugas)</option>
                             <option value="Berhenti">Berhenti / Keluar</option>
                         </select>
                     </div>
-                    <div id="guruActionDetails" class="hidden animate-[fadeIn_0.3s_ease-in-out] space-y-4 border-t border-gray-100 pt-4">
+                    <div id="pegawaiActionDetails" class="hidden animate-[fadeIn_0.3s_ease-in-out] space-y-4 border-t border-gray-100 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Berlaku / SK</label>
-                            <input type="date" id="guruActionDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                            <input type="date" id="pegawaiActionDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all">
                         </div>
-                        <div id="guruActionDestinationWrapper" class="hidden">
+                        <div id="pegawaiActionDestinationWrapper" class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Instansi / Sekolah Tujuan</label>
-                            <input type="text" id="guruActionDestination" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all" placeholder="Contoh: SMPN 1 Bungku">
+                            <input type="text" id="pegawaiActionDestination" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all" placeholder="Contoh: SMPN 1 Bungku">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Alasan / Keterangan</label>
-                            <textarea id="guruActionReason" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all" placeholder="Alasan pindah/pensiun..."></textarea>
+                            <textarea id="pegawaiActionReason" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all" placeholder="Alasan pindah/pensiun..."></textarea>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="p-5 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-xl">
-                <button onclick="closeModal('guruActionModal')" class="px-5 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium">Batal</button>
-                <button onclick="saveGuruAction()" class="px-5 py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-colors shadow-sm font-medium flex items-center gap-2">
+                <button onclick="closeModal('pegawaiActionModal')" class="px-5 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium">Batal</button>
+                <button onclick="savePegawaiAction()" class="px-5 py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-colors shadow-sm font-medium flex items-center gap-2">
                     <i class="fas fa-save"></i> Simpan Riwayat
                 </button>
             </div>
@@ -779,6 +787,8 @@
         let activePersonId = null;
         let activePersonCategory = null;
         let activeAcademicStudentId = null; 
+        let activePegawaiId = null;
+        let activePegawaiCategory = null;
 
         let currentGrade = 'VII';
         let currentClass = 'VII';
@@ -789,7 +799,10 @@
             guru_mutasi: { title: 'Daftar Guru Mutasi (Pindah)', icon: 'fa-truck-moving', color: 'text-orange-600', bg: 'bg-orange-100', cat: 'guru' },
             guru_pensiun: { title: 'Daftar Guru Purna Tugas (Pensiun)', icon: 'fa-medal', color: 'text-yellow-600', bg: 'bg-yellow-100', cat: 'guru' },
             guru_berhenti: { title: 'Daftar Guru Keluar / Berhenti', icon: 'fa-user-times', color: 'text-red-600', bg: 'bg-red-100', cat: 'guru' },
-            admin: { title: 'Tenaga Administrasi', icon: 'fa-users-cog', color: 'text-orange-600', bg: 'bg-orange-100' },
+            admin_aktif: { title: 'Tenaga Administrasi Aktif', icon: 'fa-users-cog', color: 'text-orange-600', bg: 'bg-orange-100', cat: 'admin' },
+            admin_mutasi: { title: 'Admin Mutasi (Pindah)', icon: 'fa-truck-moving', color: 'text-orange-600', bg: 'bg-orange-100', cat: 'admin' },
+            admin_pensiun: { title: 'Admin Purna Tugas (Pensiun)', icon: 'fa-medal', color: 'text-yellow-600', bg: 'bg-yellow-100', cat: 'admin' },
+            admin_berhenti: { title: 'Admin Keluar / Berhenti', icon: 'fa-user-times', color: 'text-red-600', bg: 'bg-red-100', cat: 'admin' },
             siswa_aktif: { title: 'Data Siswa Aktif', icon: 'fa-user-check', color: 'text-emerald-600', bg: 'bg-emerald-100' },
             siswa_lulus: { title: 'Data Alumni (Lulus)', icon: 'fa-user-graduate', color: 'text-blue-600', bg: 'bg-blue-100' },
             siswa_mutasi: { title: 'Data Mutasi (Pindah)', icon: 'fa-exchange-alt', color: 'text-orange-600', bg: 'bg-orange-100' },
@@ -842,7 +855,7 @@
                 if (el) {
                     el.style.display = '';
                     if (isGuru) el.classList.add('hidden');
-                    else if (id !== 'buatSuratSubMenu' && id !== 'arsipSubMenu' && id !== 'siswaSubMenu' && id !== 'guruSubMenu' && id !== 'skSubMenu' && id !== 'lolosButuhSubMenu') el.classList.remove('hidden'); 
+                    else if (id !== 'buatSuratSubMenu' && id !== 'arsipSubMenu' && id !== 'siswaSubMenu' && id !== 'guruSubMenu' && id !== 'adminSubMenu' && id !== 'skSubMenu' && id !== 'lolosButuhSubMenu') el.classList.remove('hidden'); 
                 }
             });
         }
@@ -855,7 +868,7 @@
                 { id: '19800202', name: 'Siti Aminah, S.Pd', gender: 'Perempuan', phone: '08534567890', address: 'Jl. Mawar No. 12', documents: [], status: 'Aktif' },
                 { id: '19850303', name: 'Ahmad Yani, S.Kom', gender: 'Laki-laki', phone: '08112233445', address: 'Jl. Melati No. 4', documents: [], status: 'Aktif' }
             ];
-            appData.admin = [{ id: '19900404', name: 'Rina Kusuma', gender: 'Perempuan', phone: '08223344556', address: 'Jl. Kutilang No. 9', documents: [] }];
+            appData.admin = [{ id: '19900404', name: 'Rina Kusuma', gender: 'Perempuan', phone: '08223344556', address: 'Jl. Kutilang No. 9', documents: [], status: 'Aktif' }];
             appData.siswa = [
                 { id: '2024001', name: 'Andi Saputra', gender: 'Laki-laki', phone: '08998877665', address: 'Jl. Rajawali No. 22', kelas: 'VII', status: 'Aktif', documents: [] },
                 { id: '2024002', name: 'Bunga Citra', gender: 'Perempuan', phone: '08776655443', address: 'Jl. Merpati No. 11', kelas: 'VIII', status: 'Aktif', documents: [] }
@@ -875,10 +888,9 @@
         window.setAppData = function(data) { appData = data; };
 
         function navigate(page) {
-            // --- KEAMANAN TAMBAHAN: Cegah Akses Paksa URL/Tombol ---
             const role = sessionStorage.getItem('siakad_role');
             if (role === 'Guru') {
-                const restrictedPages = ['kepsek', 'guru_aktif', 'guru_mutasi', 'guru_pensiun', 'guru_berhenti', 'admin', 'wali_kelas', 'keadaan_pegawai', 'pengaturan_logo'];
+                const restrictedPages = ['kepsek', 'guru_aktif', 'guru_mutasi', 'guru_pensiun', 'guru_berhenti', 'admin_aktif', 'admin_mutasi', 'admin_pensiun', 'admin_berhenti', 'wali_kelas', 'keadaan_pegawai', 'pengaturan_logo'];
                 if (restrictedPages.includes(page) || page.startsWith('surat_') || page.startsWith('sk_') || (categoryMap[page] && categoryMap[page].type === 'sekolah')) {
                     showAppDialog('alert', 'Akses Ditolak', 'Maaf, menu ini bersifat rahasia dan hanya dapat diakses oleh Administrator / Kepala Sekolah.');
                     return;
@@ -888,10 +900,12 @@
             currentCategory = page;
             
             document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('bg-blue-800', 'text-white', 'border-blue-400', 'text-emerald-300', 'text-blue-300');
+                link.classList.remove('bg-blue-800', 'text-white', 'border-blue-400', 'text-emerald-300', 'text-blue-300', 'text-orange-300');
                 if(link.id.startsWith('nav-siswa_') && page.startsWith('siswa_')) {
                     if (link.id !== `nav-${page}`) link.classList.add('text-gray-400');
                 } else if(link.id.startsWith('nav-guru_') && page.startsWith('guru_')) {
+                    if (link.id !== `nav-${page}`) link.classList.add('text-gray-400');
+                } else if(link.id.startsWith('nav-admin_') && page.startsWith('admin_')) {
                     if (link.id !== `nav-${page}`) link.classList.add('text-gray-400');
                 } else {
                     link.classList.add('text-gray-300', 'border-transparent');
@@ -904,6 +918,7 @@
                 activeLink.classList.add('bg-blue-800', 'border-transparent');
                 if (page.startsWith('siswa_')) activeLink.classList.add('text-emerald-300');
                 else if (page.startsWith('guru_')) activeLink.classList.add('text-blue-300');
+                else if (page.startsWith('admin_')) activeLink.classList.add('text-orange-300');
                 else activeLink.classList.add('text-white', 'border-blue-400');
             }
 
@@ -948,10 +963,10 @@
                 const catInfo = categoryMap[page];
                 title.innerText = catInfo.title;
                 renderSiswaView(catInfo, main, page);
-            } else if (page.startsWith('guru_')) {
+            } else if (page.startsWith('guru_') || page.startsWith('admin_')) {
                 const catInfo = categoryMap[page];
                 title.innerText = catInfo.title;
-                renderGuruView(catInfo, main, page);
+                renderPegawaiView(catInfo, main, page);
             } else if (page === 'rapor') {
                 title.innerText = 'Cetak Rapor Kurikulum Merdeka';
                 renderRaporView(main);
@@ -1021,7 +1036,7 @@
             const isActiveView = page === 'siswa_aktif';
             
             const role = sessionStorage.getItem('siakad_role') || '';
-            const canManageStudent = role.toLowerCase().includes('admin');
+            const canManageStudent = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
             
             let html = `
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -1179,9 +1194,16 @@
             container.innerHTML = html;
         }
 
-        function renderGuruView(info, container, page) {
-            const isAktif = page === 'guru_aktif';
+        function renderPegawaiView(info, container, page) {
+            const isAktif = page.includes('_aktif');
+            const catStr = info.cat; 
+            const dataTarget = appData[catStr] || [];
             
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
+            
+            let btnClass = catStr === 'guru' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-orange-600 hover:bg-orange-700';
+
             let html = `
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div class="flex items-center gap-3">
@@ -1190,10 +1212,10 @@
                         </div>
                         <div>
                             <h2 class="text-xl font-bold text-gray-800">${info.title}</h2>
-                            <p class="text-sm text-gray-500">${isAktif ? 'Manajemen data guru yang sedang bertugas.' : 'Riwayat data guru (' + info.title + ').'}</p>
+                            <p class="text-sm text-gray-500">${isAktif ? 'Manajemen data ' + catStr + ' yang sedang bertugas.' : 'Riwayat data ' + catStr + ' (' + info.title + ').'}</p>
                         </div>
                     </div>
-                    ${isAktif ? `<button onclick="openPersonModal('guru')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Guru</button>` : ''}
+                    ${isAktif && isAdmin ? `<button onclick="openPersonModal('${catStr}')" class="${btnClass} text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"><i class="fas fa-plus"></i> Tambah ${catStr === 'guru' ? 'Guru' : 'Admin'}</button>` : ''}
                 </div>
                 
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
@@ -1214,18 +1236,18 @@
             `;
             
             let targetStatus = 'Aktif';
-            if (page === 'guru_mutasi') targetStatus = 'Mutasi';
-            if (page === 'guru_pensiun') targetStatus = 'Pensiun';
-            if (page === 'guru_berhenti') targetStatus = 'Berhenti';
+            if (page.includes('_mutasi')) targetStatus = 'Mutasi';
+            if (page.includes('_pensiun')) targetStatus = 'Pensiun';
+            if (page.includes('_berhenti')) targetStatus = 'Berhenti';
 
-            const data = appData.guru.filter(g => {
-                const stat = g.status || 'Aktif';
+            const filteredData = dataTarget.filter(p => {
+                const stat = p.status || 'Aktif';
                 return stat === targetStatus;
             });
 
-            if (data.length === 0) { html += `<tr><td colspan="${!isAktif ? '7' : '6'}" class="p-8 text-center text-gray-500">Belum ada data guru di kategori ini.</td></tr>`; } 
+            if (filteredData.length === 0) { html += `<tr><td colspan="${!isAktif ? '7' : '6'}" class="p-8 text-center text-gray-500">Belum ada data di kategori ini.</td></tr>`; } 
             else {
-                data.forEach((item, index) => {
+                filteredData.forEach((item, index) => {
                     const docCount = item.documents ? item.documents.length : 0;
                     
                     let statusDetails = '';
@@ -1237,13 +1259,17 @@
                     }
 
                     let actionButtons = '';
-                    if (isAktif) {
-                        actionButtons += `<button onclick="openGuruActionModal('${item.id}')" class="text-orange-500 bg-orange-50 p-2 rounded-md mr-1 hover:bg-orange-100 transition-colors" title="Proses Status (Mutasi/Pensiun/Berhenti)"><i class="fas fa-exchange-alt"></i></button>`;
-                        actionButtons += `<button onclick="editPerson('guru', '${item.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-md mr-1 hover:bg-blue-100 transition-colors" title="Edit Data"><i class="fas fa-edit"></i></button>`;
-                        actionButtons += `<button onclick="deletePerson('guru', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                    if (isAdmin) {
+                        if (isAktif) {
+                            actionButtons += `<button onclick="openPegawaiActionModal('${catStr}', '${item.id}')" class="text-orange-500 bg-orange-50 p-2 rounded-md mr-1 hover:bg-orange-100 transition-colors" title="Proses Status (Mutasi/Pensiun/Berhenti)"><i class="fas fa-exchange-alt"></i></button>`;
+                            actionButtons += `<button onclick="editPerson('${catStr}', '${item.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-md mr-1 hover:bg-blue-100 transition-colors" title="Edit Data"><i class="fas fa-edit"></i></button>`;
+                            actionButtons += `<button onclick="deletePerson('${catStr}', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                        } else {
+                            actionButtons += `<button onclick="openPegawaiActionModal('${catStr}', '${item.id}')" class="text-emerald-500 bg-emerald-50 p-2 rounded-md mr-1 hover:bg-emerald-100 transition-colors" title="Kembalikan ke Status Aktif"><i class="fas fa-undo"></i></button>`;
+                            actionButtons += `<button onclick="deletePerson('${catStr}', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                        }
                     } else {
-                        actionButtons += `<button onclick="openGuruActionModal('${item.id}')" class="text-emerald-500 bg-emerald-50 p-2 rounded-md mr-1 hover:bg-emerald-100 transition-colors" title="Kembalikan ke Status Aktif"><i class="fas fa-undo"></i></button>`;
-                        actionButtons += `<button onclick="deletePerson('guru', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                        actionButtons = `<span class="text-gray-400 text-xs italic">Hanya Lihat</span>`;
                     }
 
                     html += `
@@ -1253,7 +1279,76 @@
                             <td class="p-4 text-gray-600">${item.id}</td>
                             <td class="p-4 text-gray-600">${item.jabatan || '-'}</td>
                             ${statusDetails}
-                            <td class="p-4 text-center"><button onclick="openDocumentModal('guru', '${item.id}')" class="px-3 py-1.5 rounded-full ${docCount>0?'bg-indigo-50 text-indigo-700 hover:bg-indigo-100':'bg-gray-100 text-gray-500 hover:bg-gray-200'} text-xs font-medium transition-colors"><i class="fas fa-link"></i> ${docCount} Link</button></td>
+                            <td class="p-4 text-center"><button onclick="openDocumentModal('${catStr}', '${item.id}')" class="px-3 py-1.5 rounded-full ${docCount>0?'bg-indigo-50 text-indigo-700 hover:bg-indigo-100':'bg-gray-100 text-gray-500 hover:bg-gray-200'} text-xs font-medium transition-colors"><i class="fas fa-link"></i> ${docCount} Link</button></td>
+                            <td class="p-4 text-center sticky right-0 bg-white shadow-[-5px_0_10px_rgba(0,0,0,0.02)]">
+                                <div class="flex justify-center">
+                                    ${actionButtons}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            html += `</tbody></table></div></div>`;
+            container.innerHTML = html;
+        }
+
+        function renderDataTable(category, info, container) {
+            const dataTarget = appData[category] || [];
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
+
+            let html = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="${info.bg} ${info.color} p-3 rounded-lg">
+                            <i class="fas ${info.icon} text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">${info.title}</h2>
+                            <p class="text-sm text-gray-500">Kelola informasi ${info.title.toLowerCase()}.</p>
+                        </div>
+                    </div>
+                    ${isAdmin ? `<button onclick="openPersonModal('${category}')" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Data</button>` : ''}
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm">
+                                    <th class="p-4 font-semibold w-16 text-center">No</th>
+                                    <th class="p-4 font-semibold">Nama Lengkap</th>
+                                    <th class="p-4 font-semibold">NIP/NIK</th>
+                                    <th class="p-4 font-semibold">Jabatan</th>
+                                    <th class="p-4 font-semibold text-center">Arsip Dok.</th>
+                                    <th class="p-4 font-semibold text-center sticky right-0 bg-gray-50">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-sm">
+            `;
+            
+            if (dataTarget.length === 0) { 
+                html += `<tr><td colspan="6" class="p-8 text-center text-gray-500">Belum ada data di kategori ini.</td></tr>`; 
+            } else {
+                dataTarget.forEach((item, index) => {
+                    const docCount = item.documents ? item.documents.length : 0;
+                    
+                    let actionButtons = '';
+                    if (isAdmin) {
+                        actionButtons += `<button onclick="editPerson('${category}', '${item.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-md mr-1 hover:bg-blue-100 transition-colors" title="Edit Data"><i class="fas fa-edit"></i></button>`;
+                        actionButtons += `<button onclick="deletePerson('${category}', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                    } else {
+                        actionButtons = `<span class="text-gray-400 text-xs italic">Hanya Lihat</span>`;
+                    }
+
+                    html += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-4 text-center text-gray-500">${index + 1}</td>
+                            <td class="p-4 font-semibold text-gray-800">${item.name}</td>
+                            <td class="p-4 text-gray-600">${item.id}</td>
+                            <td class="p-4 text-gray-600">${item.jabatan || '-'}</td>
+                            <td class="p-4 text-center"><button onclick="openDocumentModal('${category}', '${item.id}')" class="px-3 py-1.5 rounded-full ${docCount>0?'bg-indigo-50 text-indigo-700 hover:bg-indigo-100':'bg-gray-100 text-gray-500 hover:bg-gray-200'} text-xs font-medium transition-colors"><i class="fas fa-link"></i> ${docCount} Link</button></td>
                             <td class="p-4 text-center sticky right-0 bg-white shadow-[-5px_0_10px_rgba(0,0,0,0.02)]">
                                 <div class="flex justify-center">
                                     ${actionButtons}
@@ -1280,9 +1375,10 @@
             const guruP = activeGuru.filter(g => g.gender === 'Perempuan').length;
             const totalGuru = activeGuru.length;
 
-            const adminL = appData.admin.filter(a => a.gender === 'Laki-laki').length;
-            const adminP = appData.admin.filter(a => a.gender === 'Perempuan').length;
-            const totalAdmin = appData.admin.length;
+            const activeAdmin = appData.admin.filter(a => !a.status || a.status === 'Aktif');
+            const adminL = activeAdmin.filter(a => a.gender === 'Laki-laki').length;
+            const adminP = activeAdmin.filter(a => a.gender === 'Perempuan').length;
+            const totalAdmin = activeAdmin.length;
 
             const activeSiswa = appData.siswa.filter(s => !s.status || s.status === 'Aktif' || s.status === 'Tinggal Kelas');
             const siswaL = activeSiswa.filter(s => s.gender === 'Laki-laki').length;
@@ -1426,11 +1522,11 @@
                     </div>
                     
                     <!-- Kartu 3: Tenaga Admin -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 ${!isGuru ? 'hover:shadow-xl transition-shadow cursor-pointer' : ''} relative overflow-hidden group" ${!isGuru ? `onclick="navigate('admin')"` : ''}>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 ${!isGuru ? 'hover:shadow-xl transition-shadow cursor-pointer' : ''} relative overflow-hidden group" ${!isGuru ? `onclick="navigate('admin_aktif')"` : ''}>
                         <div class="absolute -right-6 -bottom-6 text-orange-50 opacity-40 ${!isGuru ? 'group-hover:scale-110 transition-transform duration-500' : ''}"><i class="fas fa-users-cog text-9xl"></i></div>
                         <div class="flex justify-between items-start mb-6 relative z-10">
                             <div>
-                                <p class="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Tenaga Admin</p>
+                                <p class="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Admin Aktif</p>
                                 <p class="text-4xl font-black text-gray-800">${totalAdmin}</p>
                             </div>
                             <div class="bg-orange-100/80 p-3 rounded-xl text-orange-600 shadow-sm"><i class="fas fa-users-cog text-2xl"></i></div>
@@ -1547,10 +1643,11 @@
             let allPegawai = [];
             
             const activeGuru = appData.guru.filter(g => !g.status || g.status === 'Aktif');
+            const activeAdmin = appData.admin.filter(a => !a.status || a.status === 'Aktif');
             
             appData.kepsek.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Kepala Sekolah' }));
             activeGuru.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Guru Pendidik' }));
-            appData.admin.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Tenaga Administrasi' }));
+            activeAdmin.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Tenaga Administrasi' }));
 
             let tableRows = '';
             if (allPegawai.length === 0) {
@@ -1947,9 +2044,18 @@
             } else if (isSK || isPersonelLetter) {
                 let options = `<option value="">-- Ketik Manual / Pilih Personel --</option>`;
                 let dataSource = [];
-                if (page.includes('Guru') || page === 'sk_guru') dataSource = appData.guru;
-                else if (page.includes('Siswa')) dataSource = appData.siswa;
-                else dataSource = appData.admin;
+                
+                if (page === 'surat_pindahGuru') {
+                    const mutasiGuru = appData.guru.filter(g => g.status === 'Mutasi');
+                    const mutasiAdmin = appData.admin.filter(a => a.status === 'Mutasi');
+                    dataSource = [...mutasiGuru, ...mutasiAdmin];
+                } else if (page.includes('Guru') || page === 'sk_guru') {
+                    dataSource = appData.guru;
+                } else if (page.includes('Siswa')) {
+                    dataSource = appData.siswa;
+                } else {
+                    dataSource = appData.admin;
+                }
 
                 dataSource.forEach(p => { options += `<option value="${p.id}">${p.name} (${p.id})</option>`; });
 
@@ -1975,7 +2081,8 @@
             let selectedPerson = null;
             if (selectedId) {
                 let dataSource = [];
-                if (page.includes('Guru') || page === 'sk_guru') dataSource = appData.guru;
+                if (page === 'surat_pindahGuru') dataSource = [...appData.guru, ...appData.admin];
+                else if (page.includes('Guru') || page === 'sk_guru') dataSource = appData.guru;
                 else if (page.includes('Siswa')) dataSource = appData.siswa;
                 else dataSource = appData.admin;
                 selectedPerson = dataSource.find(p => p.id === selectedId);
@@ -2117,7 +2224,7 @@
             
             // 2. LOGIKA UNTUK MENU SURAT DINAS
             } else {
-                let perihalText = customTitle || 'Undangan Resmi';
+                let perihalText = 'Undangan Resmi';
                 
                 if (type === 'surat_tugas') perihalText = 'Surat Tugas';
                 else if (type === 'surat_lolosButuhGuru') perihalText = 'Keterangan Lolos Butuh Guru';
@@ -2129,7 +2236,6 @@
                 else if (type === 'surat_rapatKomite') perihalText = 'Undangan Rapat Komite Sekolah';
                 else if (type === 'surat_panggilanOrtu') perihalText = 'Panggilan Orang Tua Siswa';
                 else if (type === 'surat_sosialisasi') perihalText = 'Undangan Sosialisasi Program Sekolah';
-                else if (type === 'surat_gotongRoyong') perihalText = 'Pemberitahuan Kegiatan Gotong Royong';
 
                 let isiSurat = '';
                 
@@ -2140,26 +2246,33 @@
                 } else if (type === 'surat_lolosButuhGuru') {
                      const nama = selectedPerson ? selectedPerson.name : '[Nama Guru]';
                      const nip = selectedPerson ? selectedPerson.id : '[NIP/NIK]';
+                     const jabatan = selectedPerson && selectedPerson.jabatan ? selectedPerson.jabatan : '[Ketik Jabatan]';
+                     const tujuan = selectedPerson && selectedPerson.sekolahTujuan ? selectedPerson.sekolahTujuan : '[Ketik Sekolah Asal/Tujuan]';
                      isiSurat = `<p style="text-align: justify;">Yang bertanda tangan di bawah ini Kepala SMP Negeri 6 Mamosalato, dengan ini menerangkan bahwa:</p>
                      <table style="width: 80%; margin: 15px auto;">
                         <tr><td style="width: 150px;">Nama Lengkap</td><td>: <strong>${nama}</strong></td></tr>
                         <tr><td>NIP / NUPTK</td><td>: ${nip}</td></tr>
-                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Jabatan]</span></td></tr>
-                        <tr><td>Asal/Tujuan Instansi</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Sekolah Asal/Tujuan]</span></td></tr>
+                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${jabatan}</span></td></tr>
+                        <tr><td>Asal/Tujuan Instansi</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${tujuan}</span></td></tr>
                      </table>
                      <p style="text-align: justify;">Pada prinsipnya kami menyatakan <strong>Bersedia Menerima / Bersedia Melepas</strong> <i style="font-size: 10px;">(*coret yang tidak perlu)</i> guru tersebut di atas sepanjang tidak bertentangan dengan peraturan perundang-undangan yang berlaku, serta mutasi tersebut disetujui oleh Dinas Pendidikan Daerah terkait.</p>
                      <p style="text-align: justify;">Demikian surat keterangan lolos butuh ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>`;
                 } else if (type === 'surat_pindahGuru') {
-                     const nama = selectedPerson ? selectedPerson.name : '[Nama Guru]';
+                     const nama = selectedPerson ? selectedPerson.name : '[Nama Pegawai]';
                      const nip = selectedPerson ? selectedPerson.id : '[NIP/NIK]';
+                     const jabatan = selectedPerson && selectedPerson.jabatan ? selectedPerson.jabatan : '[Ketik Jabatan]';
+                     const tujuan = selectedPerson && selectedPerson.sekolahTujuan ? selectedPerson.sekolahTujuan : '[Ketik Sekolah Tujuan]';
+                     const alasan = selectedPerson && selectedPerson.alasan ? selectedPerson.alasan : '[Ketik Alasan Pindah]';
+                     const tglPermohonan = selectedPerson && selectedPerson.tglSurat ? selectedPerson.tglSurat : '[Ketik Tanggal Surat Pemohon]';
+                     
                      isiSurat = `<p style="text-align: justify;">Yang bertanda tangan di bawah ini Kepala SMP Negeri 6 Mamosalato, dengan ini memberikan Rekomendasi Pindah Tugas kepada:</p>
                      <table style="width: 80%; margin: 15px auto;">
                         <tr><td style="width: 150px;">Nama Lengkap</td><td>: <strong>${nama}</strong></td></tr>
                         <tr><td>NIP / NUPTK</td><td>: ${nip}</td></tr>
-                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Jabatan]</span></td></tr>
-                        <tr><td>Sekolah Tujuan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Sekolah Tujuan]</span></td></tr>
+                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${jabatan}</span></td></tr>
+                        <tr><td>Sekolah Tujuan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${tujuan}</span></td></tr>
                      </table>
-                     <p style="text-align: justify;">Sesuai dengan permohonan yang bersangkutan tertanggal <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Tanggal Surat Pemohon]</span> perihal permohonan pindah tugas karena alasan <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Alasan Pindah]</span>.</p>
+                     <p style="text-align: justify;">Sesuai dengan permohonan yang bersangkutan tertanggal <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${tglPermohonan}</span> perihal permohonan pindah tugas karena alasan <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${alasan}</span>.</p>
                      <p style="text-align: justify;">Selama bertugas di SMP Negeri 6 Mamosalato, yang bersangkutan telah melaksanakan tugas dengan baik. Demikian surat rekomendasi ini dibuat agar dapat dijadikan bahan pertimbangan selanjutnya.</p>`;
                 } else if (type === 'surat_lolosButuhSiswa') {
                      const nama = selectedPerson ? selectedPerson.name : '[Nama Siswa]';
@@ -2259,6 +2372,32 @@
             });
         }
 
+        function renderSekolahDocs(category, info, container) {
+            let html = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="${info.bg} ${info.color} p-3 rounded-lg"><i class="fas ${info.icon} text-xl"></i></div>
+                        <div><h2 class="text-xl font-bold text-gray-800">${info.title}</h2></div>
+                    </div>
+                    <button onclick="openSekolahDocModal('${category}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Arsip</button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm"><th class="p-4">No</th><th class="p-4">Nomor Surat</th><th class="p-4">Perihal</th><th class="p-4">Tanggal</th><th class="p-4">Aksi</th></tr></thead>
+                            <tbody class="divide-y divide-gray-100 text-sm">
+            `;
+            const data = appData.dokumenSekolah[category] || [];
+            if (data.length === 0) { html += `<tr><td colspan="5" class="p-8 text-center text-gray-500">Belum ada arsip.</td></tr>`; } 
+            else {
+                data.forEach((item, index) => {
+                    html += `<tr><td class="p-4 text-center">${index + 1}</td><td class="p-4">${item.noSurat}</td><td class="p-4">${item.perihal}</td><td class="p-4">${item.tanggal}</td><td class="p-4"><button onclick="downloadSekolahDoc('${category}', ${item.id})" class="text-blue-500 bg-blue-50 p-2 rounded-md mr-2" title="Buka Link GDrive"><i class="fas fa-external-link-alt"></i></button><button onclick="deleteSekolahDoc('${category}', ${item.id})" class="text-red-500 bg-red-50 p-2 rounded-md"><i class="fas fa-trash"></i></button></td></tr>`;
+                });
+            }
+            html += `</tbody></table></div></div>`;
+            container.innerHTML = html;
+        }
+
         let currentConfirmCallback = null;
         function executeConfirm() {
             if (currentConfirmCallback) currentConfirmCallback();
@@ -2269,9 +2408,9 @@
             const category = document.getElementById('formCategory').value;
             const oldId = document.getElementById('formId').value;
             const role = sessionStorage.getItem('siakad_role') || '';
-            const isAdmin = role.toLowerCase().includes('admin');
+            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
             
-            const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
+            const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : (category.startsWith('admin') ? 'admin' : category));
             
             const newPerson = {
                 id: document.getElementById('inputId').value,
@@ -2304,13 +2443,15 @@
                 newPerson.pendidikan = document.getElementById('inputPendidikan').value;
                 newPerson.jurusan = document.getElementById('inputJurusan').value;
                 
-                if (dataCategory === 'guru') {
+                if (dataCategory === 'guru' || dataCategory === 'admin') {
                     newPerson.status = 'Aktif'; 
-                    if (isAdmin) {
+                    if (dataCategory === 'guru' && isAdmin) {
                         newPerson.username = document.getElementById('inputUsername').value;
                         newPerson.password = document.getElementById('inputPassword').value;
                     }
-                    newPerson.mapel = Array.from(document.querySelectorAll('.mapel-checkbox:checked')).map(cb => cb.value);
+                    if (dataCategory === 'guru') {
+                        newPerson.mapel = Array.from(document.querySelectorAll('.mapel-checkbox:checked')).map(cb => cb.value);
+                    }
                 }
             }
 
@@ -2321,13 +2462,13 @@
                 if (index > -1) {
                     newPerson.documents = appData[dataCategory][index].documents || [];
                     if (dataCategory === 'siswa') newPerson.status = appData[dataCategory][index].status || 'Aktif';
-                    if (dataCategory === 'guru') {
+                    if (dataCategory === 'guru' || dataCategory === 'admin') {
                          newPerson.status = appData[dataCategory][index].status || 'Aktif';
                          newPerson.tglSurat = appData[dataCategory][index].tglSurat || '';
                          newPerson.sekolahTujuan = appData[dataCategory][index].sekolahTujuan || '';
                          newPerson.alasan = appData[dataCategory][index].alasan || '';
                          
-                         if (!isAdmin) {
+                         if (dataCategory === 'guru' && !isAdmin) {
                              newPerson.username = appData[dataCategory][index].username;
                              newPerson.password = appData[dataCategory][index].password;
                          }
@@ -2346,7 +2487,7 @@
         }
 
         function deletePerson(category, id) {
-            const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
+            const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : (category.startsWith('admin') ? 'admin' : category));
             showAppDialog('confirm', 'Hapus Personel?', 'Yakin menghapus data ini beserta link dokumennya?', () => {
                 appData[dataCategory] = appData[dataCategory].filter(p => p.id !== id);
                 saveDataLocally().then(() => renderContent(currentCategory));
@@ -2354,38 +2495,6 @@
         }
 
         function editPerson(category, id) { openPersonModal(category, id); }
-
-        function openDocumentModal(category, id) {
-            activePersonCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
-            activePersonId = id;
-            const person = appData[activePersonCategory].find(p => p.id === id);
-            if (!person) return;
-            document.getElementById('docModalSubtitle').innerText = `${person.name} (${person.id})`;
-            
-            const role = sessionStorage.getItem('siakad_role') || '';
-            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
-            
-            const modalBody = document.querySelector('#documentModal .flex-1.flex');
-            const addPanel = modalBody.children[0]; 
-            const listPanel = modalBody.children[1]; 
-            
-            if (!isAdmin) {
-                addPanel.style.display = 'none';
-                listPanel.classList.remove('md:w-2/3');
-                listPanel.classList.add('w-full');
-            } else {
-                addPanel.style.display = 'flex';
-                listPanel.classList.remove('w-full');
-                listPanel.classList.add('md:w-2/3');
-            }
-
-            renderDocumentList(person);
-            
-            document.getElementById('inputDocName').value = '';
-            document.getElementById('inputDocUrl').value = '';
-            
-            document.getElementById('documentModal').classList.remove('hidden');
-        }
 
         async function uploadDocument() {
             const docUrl = document.getElementById('inputDocUrl').value.trim();
@@ -2490,85 +2599,6 @@
             });
         }
 
-        function renderDataTable(category, info, container) {
-            let html = `
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="${info.bg} ${info.color} p-3 rounded-lg"><i class="fas ${info.icon} text-xl"></i></div>
-                        <div><h2 class="text-xl font-bold text-gray-800">${info.title}</h2></div>
-                    </div>
-                    <button onclick="openPersonModal('${category}')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Data</button>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse whitespace-nowrap">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm">
-                                    <th class="p-4 font-semibold w-16 text-center">No</th>
-                                    <th class="p-4 font-semibold">Nama Lengkap</th>
-                                    <th class="p-4 font-semibold">NIP/NIK</th>
-                                    <th class="p-4 font-semibold">Jabatan</th>
-                                    <th class="p-4 font-semibold">L/P</th>
-                                    <th class="p-4 font-semibold text-center">Arsip</th>
-                                    <th class="p-4 font-semibold text-center sticky right-0 bg-gray-50">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 text-sm">
-            `;
-            
-            const data = appData[category] || [];
-            if (data.length === 0) { html += `<tr><td colspan="7" class="p-8 text-center text-gray-500">Belum ada data.</td></tr>`; } 
-            else {
-                data.forEach((item, index) => {
-                    const docCount = item.documents ? item.documents.length : 0;
-                    html += `
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-4 text-center text-gray-500">${index + 1}</td>
-                            <td class="p-4 font-semibold text-gray-800">${item.name}</td>
-                            <td class="p-4 text-gray-600">${item.id}</td>
-                            <td class="p-4 text-gray-600">${item.jabatan || '-'}</td>
-                            <td class="p-4 text-gray-600">${item.gender === 'Laki-laki' ? 'L' : 'P'}</td>
-                            <td class="p-4 text-center"><button onclick="openDocumentModal('${category}', '${item.id}')" class="px-3 py-1.5 rounded-full ${docCount>0?'bg-indigo-50 text-indigo-700':'bg-gray-100 text-gray-500'} text-xs font-medium"><i class="fas fa-link"></i> ${docCount} Link</button></td>
-                            <td class="p-4 text-center sticky right-0 bg-white">
-                                <div class="flex justify-center gap-2">
-                                    <button onclick="editPerson('${category}', '${item.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-md"><i class="fas fa-edit"></i></button>
-                                    <button onclick="deletePerson('${category}', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-            html += `</tbody></table></div></div>`;
-            container.innerHTML = html;
-        }
-
-        function renderSekolahDocs(category, info, container) {
-            let html = `
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="${info.bg} ${info.color} p-3 rounded-lg"><i class="fas ${info.icon} text-xl"></i></div>
-                        <div><h2 class="text-xl font-bold text-gray-800">${info.title}</h2></div>
-                    </div>
-                    <button onclick="openSekolahDocModal('${category}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Arsip</button>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead><tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm"><th class="p-4">No</th><th class="p-4">Nomor Surat</th><th class="p-4">Perihal</th><th class="p-4">Tanggal</th><th class="p-4">Aksi</th></tr></thead>
-                            <tbody class="divide-y divide-gray-100 text-sm">
-            `;
-            const data = appData.dokumenSekolah[category] || [];
-            if (data.length === 0) { html += `<tr><td colspan="5" class="p-8 text-center text-gray-500">Belum ada arsip.</td></tr>`; } 
-            else {
-                data.forEach((item, index) => {
-                    html += `<tr><td class="p-4 text-center">${index + 1}</td><td class="p-4">${item.noSurat}</td><td class="p-4">${item.perihal}</td><td class="p-4">${item.tanggal}</td><td class="p-4"><button onclick="downloadSekolahDoc('${category}', ${item.id})" class="text-blue-500 bg-blue-50 p-2 rounded-md mr-2" title="Buka Link GDrive"><i class="fas fa-external-link-alt"></i></button><button onclick="deleteSekolahDoc('${category}', ${item.id})" class="text-red-500 bg-red-50 p-2 rounded-md"><i class="fas fa-trash"></i></button></td></tr>`;
-                });
-            }
-            html += `</tbody></table></div></div>`;
-            container.innerHTML = html;
-        }
-
         function openPersonModal(category, id = null) {
             const modal = document.getElementById('personModal');
             document.getElementById('formCategory').value = category;
@@ -2576,14 +2606,15 @@
             
             const isSiswa = category.startsWith('siswa');
             const isGuru = category.startsWith('guru');
+            const isAdminCat = category.startsWith('admin');
             const role = sessionStorage.getItem('siakad_role') || '';
-            const isAdmin = role.toLowerCase().includes('admin');
+            const isSysAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
 
             document.getElementById('siswaFields').classList.toggle('hidden', !isSiswa);
             document.getElementById('pegawaiFields').classList.toggle('hidden', isSiswa);
             document.getElementById('kelasWrapper').classList.toggle('hidden', !isSiswa);
             
-            if (document.getElementById('loginAksesFields')) document.getElementById('loginAksesFields').classList.toggle('hidden', !(isGuru && isAdmin));
+            if (document.getElementById('loginAksesFields')) document.getElementById('loginAksesFields').classList.toggle('hidden', !(isGuru && isSysAdmin));
             if (document.getElementById('guruMapelFields')) document.getElementById('guruMapelFields').classList.toggle('hidden', !isGuru);
             document.querySelectorAll('.mapel-checkbox').forEach(cb => cb.checked = false);
 
@@ -2598,7 +2629,7 @@
             document.getElementById('formId').value = id || '';
 
             if (id) {
-                const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
+                const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : (category.startsWith('admin') ? 'admin' : category));
                 const person = appData[dataCategory].find(p => p.id === id);
                 if (person) {
                     document.getElementById('inputId').value = person.id;
@@ -2627,7 +2658,7 @@
                         document.getElementById('inputTst').value = person.tst || '';
                         document.getElementById('inputPendidikan').value = person.pendidikan || '-';
                         document.getElementById('inputJurusan').value = person.jurusan || '';
-                        if (isGuru && isAdmin) {
+                        if (isGuru && isSysAdmin) {
                             document.getElementById('inputUsername').value = person.username || '';
                             document.getElementById('inputPassword').value = person.password || '';
                         }
@@ -2644,6 +2675,38 @@
         }
 
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+
+        function openDocumentModal(category, id) {
+            activePersonCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : (category.startsWith('admin') ? 'admin' : category));
+            activePersonId = id;
+            const person = appData[activePersonCategory].find(p => p.id === id);
+            if (!person) return;
+            document.getElementById('docModalSubtitle').innerText = `${person.name} (${person.id})`;
+            
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
+            
+            const modalBody = document.querySelector('#documentModal .flex-1.flex');
+            const addPanel = modalBody.children[0]; 
+            const listPanel = modalBody.children[1]; 
+            
+            if (!isAdmin) {
+                addPanel.style.display = 'none';
+                listPanel.classList.remove('md:w-2/3');
+                listPanel.classList.add('w-full');
+            } else {
+                addPanel.style.display = 'flex';
+                listPanel.classList.remove('w-full');
+                listPanel.classList.add('md:w-2/3');
+            }
+
+            renderDocumentList(person);
+            
+            document.getElementById('inputDocName').value = '';
+            document.getElementById('inputDocUrl').value = '';
+            
+            document.getElementById('documentModal').classList.remove('hidden');
+        }
 
         function showAppDialog(type, title, message, onConfirm = null) {
             document.getElementById('dialogTitle').innerText = title;
@@ -2735,27 +2798,29 @@
             });
         }
 
-        let activeGuruId = null;
-
-        function openGuruActionModal(id) {
-            const guru = appData.guru.find(g => g.id === id);
-            if (!guru) return;
-            activeGuruId = id;
-            document.getElementById('guruModalSubtitle').innerText = `${guru.name} (${guru.id})`;
+        function openPegawaiActionModal(category, id) {
+            const dataCategory = category.startsWith('guru') ? 'guru' : 'admin';
+            const pegawai = appData[dataCategory].find(p => p.id === id);
+            if (!pegawai) return;
             
-            document.getElementById('guruActionType').value = guru.status || 'Aktif';
-            document.getElementById('guruActionDate').value = guru.tglSurat || '';
-            document.getElementById('guruActionDestination').value = guru.sekolahTujuan || '';
-            document.getElementById('guruActionReason').value = guru.alasan || '';
+            activePegawaiId = id;
+            activePegawaiCategory = dataCategory;
             
-            updateGuruActionOptions();
-            document.getElementById('guruActionModal').classList.remove('hidden');
+            document.getElementById('pegawaiModalSubtitle').innerText = `${pegawai.name} (${pegawai.id})`;
+            
+            document.getElementById('pegawaiActionType').value = pegawai.status || 'Aktif';
+            document.getElementById('pegawaiActionDate').value = pegawai.tglSurat || '';
+            document.getElementById('pegawaiActionDestination').value = pegawai.sekolahTujuan || '';
+            document.getElementById('pegawaiActionReason').value = pegawai.alasan || '';
+            
+            updatePegawaiActionOptions();
+            document.getElementById('pegawaiActionModal').classList.remove('hidden');
         }
 
-        function updateGuruActionOptions() {
-            const action = document.getElementById('guruActionType').value;
-            const detailsWrapper = document.getElementById('guruActionDetails');
-            const destWrapper = document.getElementById('guruActionDestinationWrapper');
+        function updatePegawaiActionOptions() {
+            const action = document.getElementById('pegawaiActionType').value;
+            const detailsWrapper = document.getElementById('pegawaiActionDetails');
+            const destWrapper = document.getElementById('pegawaiActionDestinationWrapper');
             
             if (action === 'Aktif') {
                 detailsWrapper.classList.add('hidden');
@@ -2769,35 +2834,37 @@
             }
         }
 
-        function saveGuruAction() {
-            const action = document.getElementById('guruActionType').value;
-            const index = appData.guru.findIndex(g => g.id === activeGuruId);
+        function savePegawaiAction() {
+            const action = document.getElementById('pegawaiActionType').value;
+            const index = appData[activePegawaiCategory].findIndex(p => p.id === activePegawaiId);
             if (index === -1) return;
             
-            appData.guru[index].status = action;
+            appData[activePegawaiCategory][index].status = action;
             
             if (action === 'Aktif') {
-                appData.guru[index].tglSurat = '';
-                appData.guru[index].sekolahTujuan = '';
-                appData.guru[index].alasan = '';
+                appData[activePegawaiCategory][index].tglSurat = '';
+                appData[activePegawaiCategory][index].sekolahTujuan = '';
+                appData[activePegawaiCategory][index].alasan = '';
             } else {
-                appData.guru[index].tglSurat = document.getElementById('guruActionDate').value;
-                appData.guru[index].alasan = document.getElementById('guruActionReason').value;
+                appData[activePegawaiCategory][index].tglSurat = document.getElementById('pegawaiActionDate').value;
+                appData[activePegawaiCategory][index].alasan = document.getElementById('pegawaiActionReason').value;
                 if (action === 'Mutasi') {
-                    appData.guru[index].sekolahTujuan = document.getElementById('guruActionDestination').value;
+                    appData[activePegawaiCategory][index].sekolahTujuan = document.getElementById('pegawaiActionDestination').value;
                 } else {
-                    appData.guru[index].sekolahTujuan = '';
+                    appData[activePegawaiCategory][index].sekolahTujuan = '';
                 }
             }
 
             saveDataLocally().then(() => {
-                closeModal('guruActionModal');
-                if (action === 'Mutasi') navigate('guru_mutasi');
-                else if (action === 'Pensiun') navigate('guru_pensiun');
-                else if (action === 'Berhenti') navigate('guru_berhenti');
-                else navigate('guru_aktif');
+                closeModal('pegawaiActionModal');
+                const catPrefix = activePegawaiCategory === 'guru' ? 'guru_' : 'admin_';
                 
-                showToast(`Riwayat ${appData.guru[index].name} disimpan sebagai: ${action}`);
+                if (action === 'Mutasi') navigate(catPrefix + 'mutasi');
+                else if (action === 'Pensiun') navigate(catPrefix + 'pensiun');
+                else if (action === 'Berhenti') navigate(catPrefix + 'berhenti');
+                else navigate(catPrefix + 'aktif');
+                
+                showToast(`Riwayat ${appData[activePegawaiCategory][index].name} disimpan sebagai: ${action}`);
             });
         }
 
@@ -2897,7 +2964,7 @@
         }
         initPWA();
 
-        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateCustomSurat = generateCustomSurat; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openGuruActionModal = openGuruActionModal; window.updateGuruActionOptions = updateGuruActionOptions; window.saveGuruAction = saveGuruAction; window.openSekolahDocModal = openSekolahDocModal; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc;
+        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openPegawaiActionModal = openPegawaiActionModal; window.updatePegawaiActionOptions = updatePegawaiActionOptions; window.savePegawaiAction = savePegawaiAction; window.openSekolahDocModal = openSekolahDocModal; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc;
 
         window.triggerRender = function() { if (typeof renderContent === 'function' && typeof currentCategory !== 'undefined') renderContent(currentCategory); };
 
@@ -2925,14 +2992,12 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-  apiKey: "AIzaSyAArJD8jaaTf6sr2ERe7kOCKspGEhSTMmY",
-  authDomain: "siakad-smpn6-mamosalato-c6915.firebaseapp.com",
-  projectId: "siakad-smpn6-mamosalato-c6915",
-  storageBucket: "siakad-smpn6-mamosalato-c6915.firebasestorage.app",
-  messagingSenderId: "197127605853",
-  appId: "1:197127605853:web:0fa1132fb717f731e507b4"
-};
-
+            apiKey: "AIzaSyAARJD8jaaTf6sr2ERe7k0CKspGEhSTMmY",
+            authDomain: "siakad-smpn6-mamosalato-c6915.firebaseapp.com",
+            projectId: "siakad-smpn6-mamosalato-c6915",
+            messagingSenderId: "197127605853",
+            appId: "1:197127605853:web:0fa1132fb717f731e507b4"
+        };
         
         window.initCloud = async function() {
             try {
