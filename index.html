@@ -929,6 +929,10 @@
         function renderSiswaView(info, container, page) {
             const isActiveView = page === 'siswa_aktif';
             
+            // --- BACA JABATAN (ROLE) SAAT INI UNTUK KEAMANAN ---
+            const role = sessionStorage.getItem('siakad_role') || 'Guru';
+            const isAdmin = (role === 'Super Admin' || role === 'Administrator');
+            
             let html = `
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div class="flex items-center gap-3">
@@ -963,7 +967,8 @@
                     const btnHover = isActive ? 'hover:bg-emerald-600 hover:text-white text-emerald-100' : 'hover:bg-red-500 hover:text-white text-gray-400';
                     const canDelete = appData.kelas[currentGrade].length > 1;
 
-                    if (canDelete) {
+                    if (canDelete && isAdmin) {
+                        // Jika ADMIN: Munculkan tombol silang hapus kelas
                         html += `
                             <div class="inline-flex items-center rounded-full transition-all ${bg}">
                                 <button onclick="setClass('${cls}')" class="pl-4 pr-2 py-1.5 text-sm font-medium focus:outline-none">${cls}</button>
@@ -974,23 +979,28 @@
                             </div>
                         `;
                     } else {
+                        // Jika GURU: Hanya tombol pilihan kelas saja
                         html += `<button onclick="setClass('${cls}')" class="px-4 py-1.5 rounded-full text-sm font-medium transition-all focus:outline-none ${bg}">${cls}</button>`;
                     }
                 });
                 
-                html += `
+                // Tambah Kelas Hanya Untuk Admin
+                if (isAdmin) {
+                    html += `
                         <button onclick="addKelas('${currentGrade}')" class="px-3 py-1.5 rounded-full text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all flex items-center gap-1 ml-auto sm:ml-2">
                             <i class="fas fa-plus"></i> Kelas
                         </button>
-                    </div>
-                `;
+                    `;
+                }
+                
+                html += `</div>`;
             }
 
             html += `
                 <div class="bg-white ${isActiveView ? 'rounded-b-xl' : 'rounded-xl'} shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gray-50">
                         <h3 class="font-semibold text-gray-700">${isActiveView ? 'Daftar Siswa - Kelas ' + currentClass : 'Daftar Keseluruhan'}</h3>
-                        ${isActiveView ? `
+                        ${isActiveView && isAdmin ? `
                         <button onclick="openPersonModal('siswa')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
                             <i class="fas fa-plus"></i> Tambah Siswa
                         </button>` : ''}
@@ -1058,9 +1068,11 @@
                                     <button onclick="editPerson('siswa', '${item.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-md transition-colors" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
+                                    ${isAdmin ? `
                                     <button onclick="deletePerson('siswa', '${item.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors" title="Hapus">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    ` : ''}
                                 </div>
                             </td>
                         </tr>
