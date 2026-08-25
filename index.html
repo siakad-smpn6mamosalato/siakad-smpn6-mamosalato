@@ -1502,9 +1502,9 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto pb-10 flex flex-col items-center w-full bg-gray-200 p-4 rounded-xl">
+                <div class="overflow-x-auto pb-10 w-full bg-gray-300 p-6 rounded-xl flex justify-center">
                     <div id="printArea" class="w-full max-w-4xl">
-                        <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm">
+                        <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm w-full">
                             <i class="fas fa-file-invoice text-4xl mb-3 text-gray-300"></i>
                             <p>Silakan pilih kelas dan siswa terlebih dahulu untuk menampilkan lembar rapor.</p>
                         </div>
@@ -1519,7 +1519,6 @@
             siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
             
             if (cls) {
-                // Filter hanya yang aktif
                 const siswas = appData.siswa.filter(s => s.kelas === cls && (!s.status || s.status === 'Aktif' || s.status === 'Tinggal Kelas'));
                 siswas.forEach(s => {
                     siswaSelect.innerHTML += `<option value="${s.id}">${s.name} (${s.id})</option>`;
@@ -1535,7 +1534,7 @@
             
             if (!studentId) {
                 printArea.innerHTML = `
-                    <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm">
+                    <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm w-full">
                         <i class="fas fa-file-invoice text-4xl mb-3 text-gray-300"></i>
                         <p>Silakan pilih kelas dan siswa terlebih dahulu untuk menampilkan lembar rapor.</p>
                     </div>`;
@@ -1574,45 +1573,137 @@
 
             const stylePrint = `
                 <style>
-                    .rapor-page { width: 210mm; min-height: 297mm; padding: 18mm; margin: 0 auto 25px auto; background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); color: black; box-sizing: border-box; }
-                    @media print { .rapor-page { margin: 0 !important; box-shadow: none !important; page-break-after: always; border: none !important; } .rapor-page:last-child { page-break-after: auto; } }
-                    .input-rapor { border-bottom: 1px dotted #a8a29e; outline: none; transition: all 0.2s; color: #4338ca; }
+                    .rapor-wrapper { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
+                    .rapor-page { width: 210mm; min-height: 297mm; padding: 18mm; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); color: black; box-sizing: border-box; position: relative; display: block; margin: 0 auto; }
+                    @media print { 
+                        @page { size: A4 portrait; margin: 0; }
+                        body, html { background: white; }
+                        .rapor-wrapper { gap: 0; display: block; width: 100%; }
+                        .rapor-page { margin: 0 !important; box-shadow: none !important; page-break-after: always; border: none !important; width: 100%; min-height: 100vh; } 
+                        .rapor-page:last-child { page-break-after: auto; } 
+                        .input-rapor { border-bottom: none !important; color: black !important; background: transparent !important; }
+                    }
+                    .input-rapor { border-bottom: 1px dotted #a8a29e; outline: none; transition: all 0.2s; color: #4338ca; background: #eef2ff; padding: 0 4px; border-radius: 2px; }
                     .input-rapor:focus { background-color: #fef08a; border-bottom: 1px solid #000; color: #000; }
-                    @media print { .input-rapor { border-bottom: none !important; color: black !important; } }
                 </style>
             `;
 
+            // LEMBAR 1: SAMPUL (Tata Letak Diperbarui)
             const page1 = `
-                <div class="rapor-page fade-in flex flex-col items-center justify-center text-center">
-                    <img src="${coverLogo}" style="width: 160px; height: 160px; object-fit: contain; margin-top: 50px; margin-bottom: 30px;">
-                    <h1 style="font-size: 22pt; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px;">RAPOR PESERTA DIDIK</h1>
-                    <h2 style="font-size: 18pt; font-weight: bold; margin-bottom: 70px;">SEKOLAH MENENGAH PERTAMA (SMP)</h2>
-                    <div style="border: 2px solid black; padding: 40px 30px; width: 75%; border-radius: 12px; margin-bottom: 90px;">
-                        <p style="font-size: 14pt; margin-bottom: 15px;">Nama Peserta Didik:</p>
-                        <h3 style="font-size: 18pt; font-weight: bold; margin: 0; padding-bottom: 10px;" class="border-b border-gray-400 mb-8 uppercase">${student.name}</h3>
-                        <p style="font-size: 14pt; margin-bottom: 15px;">NISN / NIS:</p>
-                        <h3 style="font-size: 16pt; font-weight: bold; margin: 0; padding-bottom: 10px;" class="border-b border-gray-400">${student.id} / <span contenteditable="true" class="input-rapor">${student.nis || '[Ketik NIS]'}</span></h3>
+                <div class="rapor-page fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; padding: 50px 30px; min-height: 297mm;">
+                    
+                    <!-- Bagian Atas: Logo dan Judul -->
+                    <div style="width: 100%; text-align: center;">
+                        <img src="${coverLogo}" style="width: 180px; height: 180px; object-fit: contain; margin: 0 auto 30px auto; display: block;">
+                        <h1 style="font-size: 26pt; font-weight: bold; margin-bottom: 15px; letter-spacing: 4px;">RAPOR</h1>
+                        <h2 style="font-size: 16pt; font-weight: bold; letter-spacing: 1px; margin-bottom: 0;">PESERTA DIDIK SEKOLAH MENENGAH PERTAMA<br>(SMP)</h2>
                     </div>
-                    <h3 style="font-size: 14pt; font-weight: bold; margin-bottom: 10px;">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h3>
-                    <h3 style="font-size: 14pt; font-weight: bold;">REPUBLIK INDONESIA</h3>
+                    
+                    <!-- Bagian Tengah: Nama dan NISN -->
+                    <div style="width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                        <p style="font-size: 12pt; margin-bottom: 15px;">Nama Peserta Didik:</p>
+                        <div style="border: 2px solid black; padding: 15px 30px; width: 70%; max-width: 500px; font-size: 16pt; font-weight: bold; text-transform: uppercase; margin: 0 auto;">
+                            ${student.name}
+                        </div>
+                        <p style="font-size: 12pt; margin-top: 30px; margin-bottom: 5px;">NISN / NIS:</p>
+                        <p style="font-size: 14pt; font-weight: bold;">${student.id} / <span contenteditable="true" class="input-rapor">${student.nis || '..........'}</span></p>
+                    </div>
+                    
+                    <!-- Bagian Bawah: Nama Kementerian -->
+                    <div style="width: 100%; text-align: center;">
+                        <h3 style="font-size: 14pt; font-weight: bold; margin-bottom: 8px;">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h3>
+                        <h3 style="font-size: 14pt; font-weight: bold; letter-spacing: 2px; margin-bottom: 0;">REPUBLIK INDONESIA</h3>
+                    </div>
+
                 </div>
             `;
 
+            // LEMBAR 2: BIODATA SEKOLAH
+            const page2 = `
+                <div class="rapor-page fade-in">
+                    <h2 style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 40px; margin-bottom: 50px;">RAPOR PESERTA DIDIK DAN<br>PROFIL PESERTA DIDIK</h2>
+                    
+                    <table style="width: 85%; margin: 0 auto; font-size: 12pt; line-height: 2;">
+                        <tr><td style="width: 35%;">Nama Sekolah</td><td style="width: 5%;">:</td><td style="font-weight: bold;">SMP NEGERI 6 MAMOSALATO</td></tr>
+                        <tr><td>NPSN</td><td>:</td><td><span contenteditable="true" class="input-rapor">69931393</span></td></tr>
+                        <tr><td style="vertical-align: top;">Alamat Sekolah</td><td style="vertical-align: top;">:</td><td>Kecamatan Mamosalato, Kab. Morowali Utara</td></tr>
+                        <tr><td>Kode Pos</td><td>:</td><td><span contenteditable="true" class="input-rapor">94967</span></td></tr>
+                        <tr><td>Telp/Fax</td><td>:</td><td><span contenteditable="true" class="input-rapor">-</span></td></tr>
+                        <tr><td>Kelurahan/Desa</td><td>:</td><td><span contenteditable="true" class="input-rapor">Mamosalato</span></td></tr>
+                        <tr><td>Kecamatan</td><td>:</td><td>Mamosalato</td></tr>
+                        <tr><td>Kabupaten/Kota</td><td>:</td><td>Morowali Utara</td></tr>
+                        <tr><td>Provinsi</td><td>:</td><td>Sulawesi Tengah</td></tr>
+                        <tr><td>Website</td><td>:</td><td><span contenteditable="true" class="input-rapor">-</span></td></tr>
+                        <tr><td>Email</td><td>:</td><td><span contenteditable="true" class="input-rapor">-</span></td></tr>
+                    </table>
+                </div>
+            `;
+
+            // LEMBAR 3: BIODATA SISWA
+            const page3 = `
+                <div class="rapor-page fade-in">
+                    <h2 style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 30px; margin-bottom: 30px;">KETERANGAN PESERTA DIDIK</h2>
+                    
+                    <table style="width: 90%; margin: 0 auto; font-size: 11pt; line-height: 1.8;">
+                        <tr><td style="width: 5%; text-align: center;">1.</td><td style="width: 35%;">Nama Peserta Didik (Lengkap)</td><td style="width: 3%;">:</td><td style="font-weight: bold; text-transform: uppercase;">${student.name}</td></tr>
+                        <tr><td style="text-align: center;">2.</td><td>Nomor Induk / NISN</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.nis || '[NIS]'}</span> / ${student.id}</td></tr>
+                        <tr><td style="text-align: center;">3.</td><td>Tempat, Tanggal Lahir</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.ttl || '[Tempat, Tanggal Lahir]'}</span></td></tr>
+                        <tr><td style="text-align: center;">4.</td><td>Jenis Kelamin</td><td>:</td><td>${student.gender}</td></tr>
+                        <tr><td style="text-align: center;">5.</td><td>Agama</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.agama || '[Agama]'}</span></td></tr>
+                        <tr><td style="text-align: center;">6.</td><td>Status dalam Keluarga</td><td>:</td><td><span contenteditable="true" class="input-rapor">Anak Kandung</span></td></tr>
+                        <tr><td style="text-align: center;">7.</td><td>Anak Ke</td><td>:</td><td><span contenteditable="true" class="input-rapor">...</span></td></tr>
+                        <tr><td style="text-align: center; vertical-align: top;">8.</td><td style="vertical-align: top;">Alamat Peserta Didik</td><td style="vertical-align: top;">:</td><td><span contenteditable="true" class="input-rapor">${student.address || '[Alamat Lengkap]'}</span></td></tr>
+                        <tr><td style="text-align: center;">9.</td><td>Nomor Telepon Rumah/HP</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.phone || '-'}</span></td></tr>
+                        <tr><td style="text-align: center;">10.</td><td>Sekolah Asal</td><td>:</td><td><span contenteditable="true" class="input-rapor">[Sekolah Asal SD/MI]</span></td></tr>
+                        <tr><td style="text-align: center; vertical-align: top;">11.</td><td colspan="3" style="font-weight: bold;">Orang Tua</td></tr>
+                        <tr><td></td><td>a. Nama Ayah</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.namaAyah || '[Nama Ayah]'}</span></td></tr>
+                        <tr><td></td><td>b. Nama Ibu</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.namaIbu || '[Nama Ibu]'}</span></td></tr>
+                        <tr><td></td><td>c. Pekerjaan Ayah</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.pekerjaanAyah || '[Pekerjaan Ayah]'}</span></td></tr>
+                        <tr><td></td><td>d. Pekerjaan Ibu</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.pekerjaanIbu || '[Pekerjaan Ibu]'}</span></td></tr>
+                        <tr><td style="text-align: center; vertical-align: top;">12.</td><td colspan="3" style="font-weight: bold;">Wali Peserta Didik</td></tr>
+                        <tr><td></td><td>a. Nama Wali</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.namaWali || '-'}</span></td></tr>
+                        <tr><td></td><td>b. Pekerjaan Wali</td><td>:</td><td><span contenteditable="true" class="input-rapor">${student.pekerjaanWali || '-'}</span></td></tr>
+                        <tr><td></td><td style="vertical-align: top;">c. Alamat Wali</td><td style="vertical-align: top;">:</td><td><span contenteditable="true" class="input-rapor">-</span></td></tr>
+                    </table>
+
+                    <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 40px;">
+                        <div style="width: 3cm; height: 4cm; border: 1px solid black; display: flex; justify-content: center; align-items: center; text-align: center; font-size: 10pt; color: #666; background-color: #f9f9f9;">
+                            Pasfoto<br>3 x 4
+                        </div>
+                        <div style="text-align: center; width: 250px;">
+                            <p style="margin: 0;">Mamosalato, <span contenteditable="true" class="input-rapor">${dateStr}</span></p>
+                            <p style="margin: 0; margin-bottom: 70px;">Kepala Sekolah,</p>
+                            <p style="margin: 0; font-weight: bold; text-decoration: underline;">${kepsekName}</p>
+                            <p style="margin: 0;">NIP. ${kepsekNip}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // LEMBAR 4: LAPORAN NILAI
             const page4 = `
                 <div class="rapor-page fade-in" style="color: black;">
                     <h2 style="text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 20px;">LAPORAN HASIL BELAJAR (RAPOR)</h2>
                     <table style="width: 100%; margin-bottom: 15px; font-size: 10pt;">
                         <tr><td style="width: 18%;">Nama</td><td style="width: 2%;">:</td><td style="width: 45%; font-weight: bold;">${student.name}</td><td style="width: 15%;">Kelas</td><td style="width: 2%;">:</td><td style="width: 18%; font-weight: bold;">${student.kelas}</td></tr>
-                        <tr><td>NISN</td><td>:</td><td>${student.id}</td><td>Fase</td><td>:</td><td>D (SMP)</td></tr>
+                        <tr><td>NISN / NIS</td><td>:</td><td>${student.id} / <span contenteditable="true" class="input-rapor">${student.nis || '-'}</span></td><td>Fase</td><td>:</td><td>D (SMP)</td></tr>
                         <tr><td>Sekolah</td><td>:</td><td>SMPN 6 MAMOSALATO</td><td>Semester</td><td>:</td><td>${semester}</td></tr>
                         <tr><td>Tahun Pelajaran</td><td>:</td><td>${tahun}</td><td></td><td></td><td></td></tr>
                     </table>
+                    
+                    <p style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">A. SIKAP</p>
+                    <div style="border: 1px solid black; padding: 8px; margin-bottom: 15px; font-size: 9pt; min-height: 40px;">
+                        <p style="margin: 0; line-height: 1.5; text-align: justify;" contenteditable="true" class="input-rapor">Siswa menunjukkan sikap yang sangat baik dalam dimensi Beriman, Bertakwa kepada Tuhan YME, dan Berakhlak Mulia, Gotong Royong, serta Mandiri.</p>
+                    </div>
+
+                    <p style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">B. NILAI AKADEMIK</p>
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt;">
                         <thead>
                             <tr style="background-color: #f3f4f6;"><th style="border: 1px solid black; padding: 6px; width: 4%;">No</th><th style="border: 1px solid black; padding: 6px; width: 31%;">Mata Pelajaran</th><th style="border: 1px solid black; padding: 6px; width: 10%;">Nilai</th><th style="border: 1px solid black; padding: 6px; width: 55%;">Capaian Kompetensi</th></tr>
                         </thead>
                         <tbody>${tableRows}</tbody>
                     </table>
+                    
                     <div style="border: 1px solid black; padding: 8px; margin-bottom: 20px; font-size: 9pt; min-height: 60px;">
                         <p style="margin: 0 0 5px 0; font-weight: bold;">Catatan Wali Kelas:</p>
                         <p style="margin: 0; line-height: 1.5;" contenteditable="true" class="input-rapor">Pertahankan semangat belajarmu. Teruslah berprestasi dan jadilah teladan yang baik bagi teman-teman di kelas.</p>
@@ -1621,12 +1712,13 @@
                         <tr>
                             <td style="width: 33%; text-align: center; vertical-align: top;"><p>Mengetahui,</p><p style="margin-bottom: 60px;">Orang Tua / Wali,</p><p style="font-weight: bold;">( .................................... )</p></td>
                             <td style="width: 33%; text-align: center; vertical-align: top;"><p>&nbsp;</p><p style="margin-bottom: 60px;">Wali Kelas,</p><p style="font-weight: bold; text-decoration: underline;" contenteditable="true" class="input-rapor">${waliName}</p><p>NIP. <span contenteditable="true" class="input-rapor">${waliNip}</span></p></td>
-                            <td style="width: 33%; text-align: center; vertical-align: top;"><p>Mamosalato, ${dateStr}</p><p style="margin-bottom: 60px;">Kepala Sekolah,</p><p style="font-weight: bold; text-decoration: underline;">${kepsekName}</p><p>NIP. ${kepsekNip}</p></td>
+                            <td style="width: 33%; text-align: center; vertical-align: top;"><p>Mamosalato, <span contenteditable="true" class="input-rapor">${dateStr}</span></p><p style="margin-bottom: 60px;">Kepala Sekolah,</p><p style="font-weight: bold; text-decoration: underline;">${kepsekName}</p><p>NIP. ${kepsekNip}</p></td>
                         </tr>
                     </table>
                 </div>
             `;
-            printArea.innerHTML = stylePrint + page1 + page4;
+            
+            printArea.innerHTML = stylePrint + `<div class="rapor-wrapper">` + page1 + page2 + page3 + page4 + `</div>`;
         }
 
         function updateDeskripsiRapor(element, targetId, subjectName) {
