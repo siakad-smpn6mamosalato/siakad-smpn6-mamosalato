@@ -20,13 +20,16 @@
     <script>
         window.addEventListener('DOMContentLoaded', function() {
             if (typeof tailwind === 'undefined') {
-                document.body.innerHTML = `
-                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f8fafc; color: #1e293b; text-align: center; padding: 20px;">
-                        <h1 style="color: #ef4444; margin-bottom: 10px; font-size: 24px;">⚠️ Koneksi Internet Terputus</h1>
-                        <p style="font-size: 16px; max-width: 500px; line-height: 1.5; color: #475569;">Aplikasi SIAKAD gagal memuat tampilan visual (Desain CSS). Harap pastikan perangkat Anda terhubung ke <b>Internet</b>.</p>
-                        <button onclick="window.location.reload()" style="margin-top: 20px; padding: 12px 24px; background-color: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;">Muat Ulang Halaman</button>
-                    </div>
-                `;
+                const loginScreen = document.getElementById('loginScreen');
+                if (loginScreen) {
+                    loginScreen.innerHTML = `
+                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f8fafc; color: #1e293b; text-align: center; padding: 20px;">
+                            <h1 style="color: #ef4444; margin-bottom: 10px; font-size: 24px;">⚠️ Koneksi Internet Terputus</h1>
+                            <p style="font-size: 16px; max-width: 500px; line-height: 1.5; color: #475569;">Aplikasi SIAKAD gagal memuat tampilan visual (Desain CSS). Harap pastikan perangkat Anda terhubung ke <b>Internet</b>.</p>
+                            <button onclick="window.location.reload()" style="margin-top: 20px; padding: 12px 24px; background-color: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;">Muat Ulang Halaman</button>
+                        </div>
+                    `;
+                }
             }
         });
     </script>
@@ -42,7 +45,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .a4-paper { width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); color: #000; line-height: 1.5; }
         .a4-paper:focus-visible { outline: 2px solid #3b82f6; outline-offset: 4px; }
-        @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; box-shadow: none; } @page { size: A4; margin: 0; } }
+        @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; box-shadow: none; } @page { size: A4 portrait; margin: 0; } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); } 20%, 40%, 60%, 80% { transform: translateX(5px); } }
     </style>
 </head>
@@ -143,11 +146,20 @@
                         <i class="fas fa-user-tie w-5"></i> Kepala Sekolah
                     </a>
                 </li>
+                
                 <li id="li-guru">
-                    <a href="#" onclick="navigate('guru')" id="nav-guru" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent">
-                        <i class="fas fa-chalkboard-teacher w-5"></i> Data Guru
-                    </a>
+                    <button onclick="toggleSubMenu('guruSubMenu', 'guruChevron')" class="w-full flex items-center justify-between px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent focus:outline-none">
+                        <span class="flex items-center gap-3"><i class="fas fa-chalkboard-teacher w-5"></i> Manajemen Guru</span>
+                        <i id="guruChevron" class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
                 </li>
+                <div id="guruSubMenu" class="hidden bg-blue-900/30 py-1 mt-1">
+                    <li><a href="#" onclick="navigate('guru_aktif')" id="nav-guru_aktif" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-blue-400 hover:bg-blue-800 hover:text-blue-300 transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-user-check w-4"></i> Guru Aktif</a></li>
+                    <li><a href="#" onclick="navigate('guru_mutasi')" id="nav-guru_mutasi" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-truck-moving w-4"></i> Mutasi (Pindah)</a></li>
+                    <li><a href="#" onclick="navigate('guru_pensiun')" id="nav-guru_pensiun" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-medal w-4"></i> Purna Tugas (Pensiun)</a></li>
+                    <li><a href="#" onclick="navigate('guru_berhenti')" id="nav-guru_berhenti" class="nav-link flex items-center gap-3 px-6 py-2.5 pl-12 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-user-times w-4"></i> Berhenti / Keluar</a></li>
+                </div>
+
                 <li id="li-admin">
                     <a href="#" onclick="navigate('admin')" id="nav-admin" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent">
                         <i class="fas fa-users-cog w-5"></i> Tenaga Admin
@@ -155,7 +167,7 @@
                 </li>
                 <li id="li-wali_kelas">
                     <a href="#" onclick="navigate('wali_kelas')" id="nav-wali_kelas" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent">
-                        <i class="fas fa-chalkboard-teacher w-5"></i> Wali Kelas
+                        <i class="fas fa-clipboard-check w-5"></i> Wali Kelas
                     </a>
                 </li>
                 <li id="li-keadaan_pegawai">
@@ -164,7 +176,6 @@
                     </a>
                 </li>
                 
-                <!-- Menu Data Siswa yang Baru (Dropdown) -->
                 <li id="li-siswa">
                     <button onclick="toggleSubMenu('siswaSubMenu', 'siswaChevron')" class="w-full flex items-center justify-between px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent focus:outline-none">
                         <span class="flex items-center gap-3"><i class="fas fa-user-graduate w-5"></i> Manajemen Siswa</span>
@@ -206,6 +217,20 @@
                     </div>
 
                     <li><a href="#" onclick="navigate('surat_tugas')" id="nav-surat_tugas" class="nav-link flex items-center gap-3 px-6 py-2 pl-10 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-briefcase w-4"></i> Surat Tugas</a></li>
+                    
+                    <li>
+                        <button onclick="toggleSubMenu('lolosButuhSubMenu', 'lolosButuhChevron')" class="w-full flex items-center justify-between px-6 py-2 pl-10 text-gray-300 hover:text-white transition-colors text-sm focus:outline-none">
+                            <span class="flex items-center gap-3"><i class="fas fa-exchange-alt w-4"></i> Mutasi & Lolos Butuh</span>
+                            <i id="lolosButuhChevron" class="fas fa-chevron-down transition-transform duration-300 text-xs"></i>
+                        </button>
+                    </li>
+                    <div id="lolosButuhSubMenu" class="hidden bg-blue-950/40 py-1">
+                        <li><a href="#" onclick="navigate('surat_lolosButuhGuru')" id="nav-surat_lolosButuhGuru" class="nav-link flex items-center gap-3 px-6 py-2 pl-14 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-xs"><i class="fas fa-circle text-[6px]"></i> Lolos Butuh Guru</a></li>
+                        <li><a href="#" onclick="navigate('surat_pindahGuru')" id="nav-surat_pindahGuru" class="nav-link flex items-center gap-3 px-6 py-2 pl-14 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-xs"><i class="fas fa-circle text-[6px]"></i> Surat Pindah Guru</a></li>
+                        <li><a href="#" onclick="navigate('surat_lolosButuhSiswa')" id="nav-surat_lolosButuhSiswa" class="nav-link flex items-center gap-3 px-6 py-2 pl-14 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-xs"><i class="fas fa-circle text-[6px]"></i> Lolos Butuh Siswa</a></li>
+                        <li><a href="#" onclick="navigate('surat_pindahSiswa')" id="nav-surat_pindahSiswa" class="nav-link flex items-center gap-3 px-6 py-2 pl-14 text-gray-400 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-xs"><i class="fas fa-circle text-[6px]"></i> Surat Pindah Siswa</a></li>
+                    </div>
+
                     <li><a href="#" onclick="navigate('surat_rapatGuru')" id="nav-surat_rapatGuru" class="nav-link flex items-center gap-3 px-6 py-2 pl-10 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-users w-4"></i> Rapat Dewan Guru</a></li>
                     <li><a href="#" onclick="navigate('surat_teguran')" id="nav-surat_teguran" class="nav-link flex items-center gap-3 px-6 py-2 pl-10 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-exclamation-circle w-4"></i> Teguran Pegawai</a></li>
                     <li><a href="#" onclick="navigate('surat_rapatKomite')" id="nav-surat_rapatKomite" class="nav-link flex items-center gap-3 px-6 py-2 pl-10 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent text-sm"><i class="fas fa-handshake w-4"></i> Rapat Komite</a></li>
@@ -469,7 +494,7 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-auto flex flex-col h-[85vh] fade-in">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-indigo-50 rounded-t-xl">
                 <div>
-                    <h3 class="text-lg font-semibold text-indigo-900">Manajemen Dokumen</h3>
+                    <h3 class="text-lg font-semibold text-indigo-900">Manajemen Dokumen (Link GDrive)</h3>
                     <p id="docModalSubtitle" class="text-sm text-indigo-600 mt-1">Nama Personil</p>
                 </div>
                 <button onclick="closeModal('documentModal')" class="text-gray-400 hover:text-red-500 transition-colors">
@@ -479,7 +504,7 @@
             
             <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
                 <div class="w-full md:w-1/3 bg-gray-50 p-5 border-b md:border-b-0 md:border-r border-gray-200 flex flex-col gap-4 overflow-y-auto">
-                    <h4 class="font-medium text-gray-700 text-sm border-b pb-2">Unggah Dokumen Baru</h4>
+                    <h4 class="font-medium text-gray-700 text-sm border-b pb-2">Tambah Link Dokumen</h4>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Dokumen</label>
@@ -493,22 +518,16 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih File</label>
-                            <div class="mt-1 flex justify-center px-4 py-4 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-500 transition-colors cursor-pointer bg-white" onclick="document.getElementById('fileUpload').click()">
-                                <div class="space-y-1 text-center">
-                                    <i class="fas fa-cloud-upload-alt text-2xl text-gray-400"></i>
-                                    <div class="flex text-sm text-gray-600 justify-center">
-                                        <label for="fileUpload" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
-                                            <span id="fileNameDisplay">Klik untuk memilih file</span>
-                                            <input id="fileUpload" name="fileUpload" type="file" class="sr-only" onchange="handleFileSelect(event)">
-                                        </label>
-                                    </div>
-                                    <p class="text-xs text-gray-500">Maksimal 200KB untuk mode Cloud</p>
-                                </div>
-                            </div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama / Judul File</label>
+                            <input type="text" id="inputDocName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="Contoh: Ijazah SD">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Link Google Drive</label>
+                            <input type="url" id="inputDocUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="https://drive.google.com/file/d/...">
+                            <p class="text-[10px] text-gray-500 mt-1">*Pastikan akses link diatur ke "Siapa saja yang memiliki link".</p>
                         </div>
                         <button id="btnUploadDoc" onclick="uploadDocument()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center justify-center gap-2">
-                            <i class="fas fa-save"></i> Simpan Dokumen
+                            <i class="fas fa-link"></i> Simpan Link
                         </button>
                     </div>
                 </div>
@@ -525,7 +544,7 @@
     <div id="sekolahDocModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto flex flex-col max-h-full fade-in">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl" id="sekolahModalHeader">
-                <h3 id="sekolahDocModalTitle" class="text-lg font-semibold text-gray-800">Upload Dokumen Sekolah</h3>
+                <h3 id="sekolahDocModalTitle" class="text-lg font-semibold text-gray-800">Arsip Dokumen Sekolah</h3>
                 <button onclick="closeModal('sekolahDocModal')" class="text-gray-400 hover:text-red-500 transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
@@ -546,25 +565,15 @@
                         <input type="date" id="inputTanggalSurat" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Pilih File *</label>
-                        <div class="mt-1 flex justify-center px-4 py-4 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-500 transition-colors cursor-pointer bg-white" onclick="document.getElementById('sekolahFileUpload').click()">
-                            <div class="space-y-1 text-center">
-                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400"></i>
-                                <div class="flex text-sm text-gray-600 justify-center">
-                                    <label for="sekolahFileUpload" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
-                                        <span id="sekolahFileNameDisplay">Klik untuk memilih file</span>
-                                        <input id="sekolahFileUpload" type="file" class="sr-only" onchange="handleSekolahFileSelect(event)">
-                                    </label>
-                                </div>
-                                <p class="text-xs text-gray-500">Maksimal 200KB untuk mode Cloud</p>
-                            </div>
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Link File Google Drive *</label>
+                        <input type="url" id="inputSekolahDocUrl" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="https://drive.google.com/file/d/...">
+                        <p class="text-[10px] text-gray-500 mt-1">*Pastikan hak akses link sudah terbuka (Anyone with the link).</p>
                     </div>
                 </form>
             </div>
             <div class="p-5 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-xl">
                 <button onclick="closeModal('sekolahDocModal')" class="px-5 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium">Batal</button>
-                <button id="btnUploadSekolahDoc" onclick="saveSekolahDoc()" class="px-5 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium">Upload File</button>
+                <button id="btnUploadSekolahDoc" onclick="saveSekolahDoc()" class="px-5 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium flex items-center gap-2"><i class="fas fa-link"></i> Simpan Arsip</button>
             </div>
         </div>
     </div>
@@ -581,7 +590,7 @@
         </div>
     </div>
 
-    <!-- Modal Proses Akademik -->
+    <!-- Modal Proses Akademik Siswa -->
     <div id="academicActionModal" class="fixed inset-0 modal-overlay hidden z-[55] flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto flex flex-col fade-in">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-emerald-50 rounded-t-xl">
@@ -617,7 +626,68 @@
         </div>
     </div>
 
+    <!-- Modal Status Guru -->
+    <div id="guruActionModal" class="fixed inset-0 modal-overlay hidden z-[55] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto flex flex-col fade-in">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-orange-50 rounded-t-xl">
+                <div>
+                    <h3 class="text-lg font-semibold text-orange-900">Proses Status Guru</h3>
+                    <p id="guruModalSubtitle" class="text-sm text-orange-600 mt-1">Nama Guru</p>
+                </div>
+                <button onclick="closeModal('guruActionModal')" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ubah Status Menjadi</label>
+                        <select id="guruActionType" onchange="updateGuruActionOptions()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium text-gray-700">
+                            <option value="Aktif">Aktif (Mengajar)</option>
+                            <option value="Mutasi">Mutasi (Pindah Tugas)</option>
+                            <option value="Pensiun">Pensiun (Purna Tugas)</option>
+                            <option value="Berhenti">Berhenti / Keluar</option>
+                        </select>
+                    </div>
+                    <div id="guruActionDetails" class="hidden animate-[fadeIn_0.3s_ease-in-out] space-y-4 border-t border-gray-100 pt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Berlaku / SK</label>
+                            <input type="date" id="guruActionDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                        </div>
+                        <div id="guruActionDestinationWrapper" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Instansi / Sekolah Tujuan</label>
+                            <input type="text" id="guruActionDestination" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all" placeholder="Contoh: SMPN 1 Bungku">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Alasan / Keterangan</label>
+                            <textarea id="guruActionReason" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition-all" placeholder="Alasan pindah/pensiun..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-xl">
+                <button onclick="closeModal('guruActionModal')" class="px-5 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium">Batal</button>
+                <button onclick="saveGuruAction()" class="px-5 py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-colors shadow-sm font-medium flex items-center gap-2">
+                    <i class="fas fa-save"></i> Simpan Riwayat
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const loginScreen = document.getElementById('loginScreen');
+            if (typeof tailwind === 'undefined' && loginScreen) {
+                loginScreen.innerHTML = `
+                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f8fafc; color: #1e293b; text-align: center; padding: 20px;">
+                        <h1 style="color: #ef4444; margin-bottom: 10px; font-size: 24px;">⚠️ Koneksi Internet Terputus</h1>
+                        <p style="font-size: 16px; max-width: 500px; line-height: 1.5; color: #475569;">Aplikasi SIAKAD gagal memuat tampilan visual (Desain CSS). Harap pastikan perangkat Anda terhubung ke <b>Internet</b>.</p>
+                        <button onclick="window.location.reload()" style="margin-top: 20px; padding: 12px 24px; background-color: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;">Muat Ulang Halaman</button>
+                    </div>
+                `;
+            }
+        });
+
         function handleLogin(event) {
             event.preventDefault();
             const user = document.getElementById('loginUsername').value.trim();
@@ -648,10 +718,10 @@
                 sessionStorage.setItem('siakad_name', name);
                 
                 const loginScreen = document.getElementById('loginScreen');
-                loginScreen.classList.add('opacity-0');
+                if (loginScreen) loginScreen.classList.add('opacity-0');
                 
                 setTimeout(() => {
-                    loginScreen.classList.add('hidden');
+                    if (loginScreen) loginScreen.classList.add('hidden');
                     initApp(); 
                 }, 500);
 
@@ -673,8 +743,10 @@
                 document.getElementById('loginError').classList.add('hidden');
                 
                 const loginScreen = document.getElementById('loginScreen');
-                loginScreen.classList.remove('hidden');
-                setTimeout(() => loginScreen.classList.remove('opacity-0'), 50);
+                if(loginScreen) {
+                    loginScreen.classList.remove('hidden');
+                    setTimeout(() => loginScreen.classList.remove('opacity-0'), 50);
+                }
             });
         }
 
@@ -706,8 +778,6 @@
         let currentCategory = 'dashboard';
         let activePersonId = null;
         let activePersonCategory = null;
-        let selectedFile = null;
-        let selectedSekolahFile = null;
         let activeAcademicStudentId = null; 
 
         let currentGrade = 'VII';
@@ -715,7 +785,10 @@
 
         const categoryMap = {
             kepsek: { title: 'Data Kepala Sekolah', icon: 'fa-user-tie', color: 'text-purple-600', bg: 'bg-purple-100' },
-            guru: { title: 'Data Guru', icon: 'fa-chalkboard-teacher', color: 'text-blue-600', bg: 'bg-blue-100' },
+            guru_aktif: { title: 'Daftar Guru Aktif', icon: 'fa-user-check', color: 'text-blue-600', bg: 'bg-blue-100', cat: 'guru' },
+            guru_mutasi: { title: 'Daftar Guru Mutasi (Pindah)', icon: 'fa-truck-moving', color: 'text-orange-600', bg: 'bg-orange-100', cat: 'guru' },
+            guru_pensiun: { title: 'Daftar Guru Purna Tugas (Pensiun)', icon: 'fa-medal', color: 'text-yellow-600', bg: 'bg-yellow-100', cat: 'guru' },
+            guru_berhenti: { title: 'Daftar Guru Keluar / Berhenti', icon: 'fa-user-times', color: 'text-red-600', bg: 'bg-red-100', cat: 'guru' },
             admin: { title: 'Tenaga Administrasi', icon: 'fa-users-cog', color: 'text-orange-600', bg: 'bg-orange-100' },
             siswa_aktif: { title: 'Data Siswa Aktif', icon: 'fa-user-check', color: 'text-emerald-600', bg: 'bg-emerald-100' },
             siswa_lulus: { title: 'Data Alumni (Lulus)', icon: 'fa-user-graduate', color: 'text-blue-600', bg: 'bg-blue-100' },
@@ -769,7 +842,7 @@
                 if (el) {
                     el.style.display = '';
                     if (isGuru) el.classList.add('hidden');
-                    else if (id !== 'buatSuratSubMenu' && id !== 'arsipSubMenu' && id !== 'siswaSubMenu') el.classList.remove('hidden'); 
+                    else if (id !== 'buatSuratSubMenu' && id !== 'arsipSubMenu' && id !== 'siswaSubMenu' && id !== 'guruSubMenu' && id !== 'skSubMenu' && id !== 'lolosButuhSubMenu') el.classList.remove('hidden'); 
                 }
             });
         }
@@ -779,8 +852,8 @@
             appData.waliKelas = {};
             appData.kepsek = [{ id: '19700101', name: 'Drs. Budi Santoso, M.Pd', gender: 'Laki-laki', phone: '08123456789', address: 'Jl. Merdeka No. 1, Palu', documents: [] }];
             appData.guru = [
-                { id: '19800202', name: 'Siti Aminah, S.Pd', gender: 'Perempuan', phone: '08534567890', address: 'Jl. Mawar No. 12', documents: [] },
-                { id: '19850303', name: 'Ahmad Yani, S.Kom', gender: 'Laki-laki', phone: '08112233445', address: 'Jl. Melati No. 4', documents: [] }
+                { id: '19800202', name: 'Siti Aminah, S.Pd', gender: 'Perempuan', phone: '08534567890', address: 'Jl. Mawar No. 12', documents: [], status: 'Aktif' },
+                { id: '19850303', name: 'Ahmad Yani, S.Kom', gender: 'Laki-laki', phone: '08112233445', address: 'Jl. Melati No. 4', documents: [], status: 'Aktif' }
             ];
             appData.admin = [{ id: '19900404', name: 'Rina Kusuma', gender: 'Perempuan', phone: '08223344556', address: 'Jl. Kutilang No. 9', documents: [] }];
             appData.siswa = [
@@ -802,21 +875,35 @@
         window.setAppData = function(data) { appData = data; };
 
         function navigate(page) {
+            // --- KEAMANAN TAMBAHAN: Cegah Akses Paksa URL/Tombol ---
+            const role = sessionStorage.getItem('siakad_role');
+            if (role === 'Guru') {
+                const restrictedPages = ['kepsek', 'guru_aktif', 'guru_mutasi', 'guru_pensiun', 'guru_berhenti', 'admin', 'wali_kelas', 'keadaan_pegawai', 'pengaturan_logo'];
+                if (restrictedPages.includes(page) || page.startsWith('surat_') || page.startsWith('sk_') || (categoryMap[page] && categoryMap[page].type === 'sekolah')) {
+                    showAppDialog('alert', 'Akses Ditolak', 'Maaf, menu ini bersifat rahasia dan hanya dapat diakses oleh Administrator / Kepala Sekolah.');
+                    return;
+                }
+            }
+
             currentCategory = page;
             
             document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('bg-blue-800', 'text-white', 'border-blue-400', 'text-emerald-300');
+                link.classList.remove('bg-blue-800', 'text-white', 'border-blue-400', 'text-emerald-300', 'text-blue-300');
                 if(link.id.startsWith('nav-siswa_') && page.startsWith('siswa_')) {
+                    if (link.id !== `nav-${page}`) link.classList.add('text-gray-400');
+                } else if(link.id.startsWith('nav-guru_') && page.startsWith('guru_')) {
                     if (link.id !== `nav-${page}`) link.classList.add('text-gray-400');
                 } else {
                     link.classList.add('text-gray-300', 'border-transparent');
                 }
             });
+            
             const activeLink = document.getElementById(`nav-${page}`);
             if (activeLink) {
                 activeLink.classList.remove('text-gray-300', 'text-gray-400', 'border-transparent');
                 activeLink.classList.add('bg-blue-800', 'border-transparent');
                 if (page.startsWith('siswa_')) activeLink.classList.add('text-emerald-300');
+                else if (page.startsWith('guru_')) activeLink.classList.add('text-blue-300');
                 else activeLink.classList.add('text-white', 'border-blue-400');
             }
 
@@ -861,6 +948,10 @@
                 const catInfo = categoryMap[page];
                 title.innerText = catInfo.title;
                 renderSiswaView(catInfo, main, page);
+            } else if (page.startsWith('guru_')) {
+                const catInfo = categoryMap[page];
+                title.innerText = catInfo.title;
+                renderGuruView(catInfo, main, page);
             } else if (page === 'rapor') {
                 title.innerText = 'Cetak Rapor Kurikulum Merdeka';
                 renderRaporView(main);
@@ -929,9 +1020,8 @@
         function renderSiswaView(info, container, page) {
             const isActiveView = page === 'siswa_aktif';
             
-            // --- BACA JABATAN (ROLE) SAAT INI UNTUK KEAMANAN ---
-            const role = sessionStorage.getItem('siakad_role') || 'Guru';
-            const isAdmin = (role === 'Super Admin' || role === 'Administrator');
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const canManageStudent = role.toLowerCase().includes('admin');
             
             let html = `
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -942,6 +1032,7 @@
                         <div>
                             <h2 class="text-xl font-bold text-gray-800">${info.title}</h2>
                             <p class="text-sm text-gray-500">${isActiveView ? 'Kelola data siswa berdasarkan rombongan belajar.' : 'Daftar riwayat data kesiswaan.'}</p>
+                            ${!canManageStudent ? '<p class="text-xs text-red-500 font-bold mt-1"><i class="fas fa-lock"></i> Mode Terbatas: Hanya Admin yang dapat menambah/menghapus</p>' : ''}
                         </div>
                     </div>
                 </div>
@@ -967,8 +1058,7 @@
                     const btnHover = isActive ? 'hover:bg-emerald-600 hover:text-white text-emerald-100' : 'hover:bg-red-500 hover:text-white text-gray-400';
                     const canDelete = appData.kelas[currentGrade].length > 1;
 
-                    if (canDelete && isAdmin) {
-                        // Jika ADMIN: Munculkan tombol silang hapus kelas
+                    if (canDelete && canManageStudent) {
                         html += `
                             <div class="inline-flex items-center rounded-full transition-all ${bg}">
                                 <button onclick="setClass('${cls}')" class="pl-4 pr-2 py-1.5 text-sm font-medium focus:outline-none">${cls}</button>
@@ -979,13 +1069,11 @@
                             </div>
                         `;
                     } else {
-                        // Jika GURU: Hanya tombol pilihan kelas saja
                         html += `<button onclick="setClass('${cls}')" class="px-4 py-1.5 rounded-full text-sm font-medium transition-all focus:outline-none ${bg}">${cls}</button>`;
                     }
                 });
                 
-                // Tambah Kelas Hanya Untuk Admin
-                if (isAdmin) {
+                if (canManageStudent) {
                     html += `
                         <button onclick="addKelas('${currentGrade}')" class="px-3 py-1.5 rounded-full text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all flex items-center gap-1 ml-auto sm:ml-2">
                             <i class="fas fa-plus"></i> Kelas
@@ -1000,7 +1088,7 @@
                 <div class="bg-white ${isActiveView ? 'rounded-b-xl' : 'rounded-xl'} shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gray-50">
                         <h3 class="font-semibold text-gray-700">${isActiveView ? 'Daftar Siswa - Kelas ' + currentClass : 'Daftar Keseluruhan'}</h3>
-                        ${isActiveView && isAdmin ? `
+                        ${isActiveView && canManageStudent ? `
                         <button onclick="openPersonModal('siswa')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
                             <i class="fas fa-plus"></i> Tambah Siswa
                         </button>` : ''}
@@ -1044,6 +1132,23 @@
                     let statusBadge = '';
                     if (item.status === 'Tinggal Kelas') statusBadge = `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-700">Tinggal Kelas</span>`;
 
+                    let actionButtons = '';
+                    if (isActiveView) {
+                        if (canManageStudent) {
+                            actionButtons += `<button onclick="openAcademicActionModal('${item.id}')" class="text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 p-2 rounded-md transition-colors shadow-sm border border-emerald-100" title="Proses Akademik (Mutasi / Naik Kelas)"><i class="fas fa-exchange-alt"></i></button>`;
+                            actionButtons += `<button onclick="editPerson('siswa', '${item.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-md transition-colors" title="Edit"><i class="fas fa-edit"></i></button>`;
+                            actionButtons += `<button onclick="deletePerson('siswa', '${item.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors" title="Hapus"><i class="fas fa-trash"></i></button>`;
+                        } else {
+                            actionButtons = `<span class="text-gray-400 text-xs italic">Hanya Lihat</span>`;
+                        }
+                    } else {
+                        if (canManageStudent) {
+                            actionButtons += `<button onclick="deletePerson('siswa', '${item.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                        } else {
+                            actionButtons = `<span class="text-gray-400 text-xs italic">Hanya Lihat</span>`;
+                        }
+                    }
+
                     html += `
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="p-4 text-center text-gray-500">${index + 1}</td>
@@ -1056,23 +1161,13 @@
                             <td class="p-4 text-gray-600 hidden sm:table-cell">${item.gender}</td>
                             <td class="p-4 text-center">
                                 <button onclick="openDocumentModal('siswa', '${item.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${docCount > 0 ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'} text-xs font-medium transition-colors">
-                                    <i class="fas ${docCount > 0 ? 'fa-folder-open' : 'fa-folder'}"></i>
-                                    ${docCount} File
+                                    <i class="fas ${docCount > 0 ? 'fa-link' : 'fa-folder'}"></i>
+                                    ${docCount} Arsip
                                 </button>
                             </td>
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-2">
-                                    <button onclick="openAcademicActionModal('${item.id}')" class="text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 p-2 rounded-md transition-colors shadow-sm border border-emerald-100" title="Proses Akademik (Mutasi / Naik Kelas)">
-                                        <i class="fas fa-exchange-alt"></i>
-                                    </button>
-                                    <button onclick="editPerson('siswa', '${item.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-md transition-colors" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    ${isAdmin ? `
-                                    <button onclick="deletePerson('siswa', '${item.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    ` : ''}
+                                    ${actionButtons}
                                 </div>
                             </td>
                         </tr>
@@ -1084,22 +1179,111 @@
             container.innerHTML = html;
         }
 
+        function renderGuruView(info, container, page) {
+            const isAktif = page === 'guru_aktif';
+            
+            let html = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="${info.bg} ${info.color} p-3 rounded-lg">
+                            <i class="fas ${info.icon} text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">${info.title}</h2>
+                            <p class="text-sm text-gray-500">${isAktif ? 'Manajemen data guru yang sedang bertugas.' : 'Riwayat data guru (' + info.title + ').'}</p>
+                        </div>
+                    </div>
+                    ${isAktif ? `<button onclick="openPersonModal('guru')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Guru</button>` : ''}
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm">
+                                    <th class="p-4 font-semibold w-16 text-center">No</th>
+                                    <th class="p-4 font-semibold">Nama Lengkap</th>
+                                    <th class="p-4 font-semibold">NIP/NIK</th>
+                                    <th class="p-4 font-semibold">Jabatan</th>
+                                    ${!isAktif ? `<th class="p-4 font-semibold">Keterangan</th>` : ''}
+                                    <th class="p-4 font-semibold text-center">Arsip Dok.</th>
+                                    <th class="p-4 font-semibold text-center sticky right-0 bg-gray-50">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-sm">
+            `;
+            
+            let targetStatus = 'Aktif';
+            if (page === 'guru_mutasi') targetStatus = 'Mutasi';
+            if (page === 'guru_pensiun') targetStatus = 'Pensiun';
+            if (page === 'guru_berhenti') targetStatus = 'Berhenti';
+
+            const data = appData.guru.filter(g => {
+                const stat = g.status || 'Aktif';
+                return stat === targetStatus;
+            });
+
+            if (data.length === 0) { html += `<tr><td colspan="${!isAktif ? '7' : '6'}" class="p-8 text-center text-gray-500">Belum ada data guru di kategori ini.</td></tr>`; } 
+            else {
+                data.forEach((item, index) => {
+                    const docCount = item.documents ? item.documents.length : 0;
+                    
+                    let statusDetails = '';
+                    if (!isAktif) {
+                        let dest = item.sekolahTujuan ? ` ke ${item.sekolahTujuan}` : '';
+                        let reason = item.alasan ? ` - ${item.alasan}` : '';
+                        let date = item.tglSurat ? ` (Tgl: ${item.tglSurat})` : '';
+                        statusDetails = `<td class="p-4 text-gray-500 text-xs truncate max-w-xs" title="${item.status}${dest}${reason}${date}">${item.status}${dest}${reason}${date}</td>`;
+                    }
+
+                    let actionButtons = '';
+                    if (isAktif) {
+                        actionButtons += `<button onclick="openGuruActionModal('${item.id}')" class="text-orange-500 bg-orange-50 p-2 rounded-md mr-1 hover:bg-orange-100 transition-colors" title="Proses Status (Mutasi/Pensiun/Berhenti)"><i class="fas fa-exchange-alt"></i></button>`;
+                        actionButtons += `<button onclick="editPerson('guru', '${item.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-md mr-1 hover:bg-blue-100 transition-colors" title="Edit Data"><i class="fas fa-edit"></i></button>`;
+                        actionButtons += `<button onclick="deletePerson('guru', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                    } else {
+                        actionButtons += `<button onclick="openGuruActionModal('${item.id}')" class="text-emerald-500 bg-emerald-50 p-2 rounded-md mr-1 hover:bg-emerald-100 transition-colors" title="Kembalikan ke Status Aktif"><i class="fas fa-undo"></i></button>`;
+                        actionButtons += `<button onclick="deletePerson('guru', '${item.id}')" class="text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 transition-colors" title="Hapus Permanen"><i class="fas fa-trash"></i></button>`;
+                    }
+
+                    html += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-4 text-center text-gray-500">${index + 1}</td>
+                            <td class="p-4 font-semibold text-gray-800">${item.name}</td>
+                            <td class="p-4 text-gray-600">${item.id}</td>
+                            <td class="p-4 text-gray-600">${item.jabatan || '-'}</td>
+                            ${statusDetails}
+                            <td class="p-4 text-center"><button onclick="openDocumentModal('guru', '${item.id}')" class="px-3 py-1.5 rounded-full ${docCount>0?'bg-indigo-50 text-indigo-700 hover:bg-indigo-100':'bg-gray-100 text-gray-500 hover:bg-gray-200'} text-xs font-medium transition-colors"><i class="fas fa-link"></i> ${docCount} Link</button></td>
+                            <td class="p-4 text-center sticky right-0 bg-white shadow-[-5px_0_10px_rgba(0,0,0,0.02)]">
+                                <div class="flex justify-center">
+                                    ${actionButtons}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            html += `</tbody></table></div></div>`;
+            container.innerHTML = html;
+        }
+
         function renderDashboard(container) {
             const role = sessionStorage.getItem('siakad_role') || 'Pengguna';
             const name = sessionStorage.getItem('siakad_name') || 'Administrator';
+            const isGuru = role === 'Guru';
             
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const todayStr = new Date().toLocaleDateString('id-ID', options);
 
-            const guruL = appData.guru.filter(g => g.gender === 'Laki-laki').length;
-            const guruP = appData.guru.filter(g => g.gender === 'Perempuan').length;
-            const totalGuru = appData.guru.length;
+            const activeGuru = appData.guru.filter(g => !g.status || g.status === 'Aktif');
+            const guruL = activeGuru.filter(g => g.gender === 'Laki-laki').length;
+            const guruP = activeGuru.filter(g => g.gender === 'Perempuan').length;
+            const totalGuru = activeGuru.length;
 
             const adminL = appData.admin.filter(a => a.gender === 'Laki-laki').length;
             const adminP = appData.admin.filter(a => a.gender === 'Perempuan').length;
             const totalAdmin = appData.admin.length;
 
-            // HANYA HITUNG SISWA AKTIF DI DASHBOARD
             const activeSiswa = appData.siswa.filter(s => !s.status || s.status === 'Aktif' || s.status === 'Tinggal Kelas');
             const siswaL = activeSiswa.filter(s => s.gender === 'Laki-laki').length;
             const siswaP = activeSiswa.filter(s => s.gender === 'Perempuan').length;
@@ -1121,7 +1305,6 @@
                 tableSiswaKls = `<tr><td colspan="4" class="p-6 text-center text-gray-500 italic">Belum ada data kelas yang didaftarkan.</td></tr>`;
             } else {
                 semuaKelas.forEach(cls => {
-                    // Hanya hitung siswa aktif di tabel per kelas
                     const l = activeSiswa.filter(s => s.kelas === cls && s.gender === 'Laki-laki').length;
                     const p = activeSiswa.filter(s => s.kelas === cls && s.gender === 'Perempuan').length;
                     const t = l + p;
@@ -1167,35 +1350,38 @@
                         <i class="fas fa-bolt text-yellow-500"></i>
                         <h3 class="text-gray-800 font-bold text-lg tracking-wide">Akses Cepat</h3>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5">
+                    <div class="grid grid-cols-2 ${!isGuru ? 'sm:grid-cols-4' : 'sm:grid-cols-2 max-w-xl'} gap-3 sm:gap-5">
                         <button onclick="navigate('siswa_aktif')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-emerald-400 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center gap-3 group">
                             <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                                 <i class="fas fa-user-plus text-lg"></i>
                             </div>
                             <span class="text-sm font-semibold text-gray-700 group-hover:text-emerald-700 transition-colors">Data Siswa</span>
                         </button>
-                        <button onclick="navigate('guru')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-400 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center gap-3 group">
+                        ${!isGuru ? `
+                        <button onclick="navigate('guru_aktif')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-400 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center gap-3 group">
                             <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                                 <i class="fas fa-chalkboard-teacher text-lg"></i>
                             </div>
                             <span class="text-sm font-semibold text-gray-700 group-hover:text-blue-700 transition-colors">Data Guru</span>
-                        </button>
+                        </button>` : ''}
                         <button onclick="navigate('rapor')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-indigo-400 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center gap-3 group">
                             <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                                 <i class="fas fa-book-open text-lg"></i>
                             </div>
                             <span class="text-sm font-semibold text-gray-700 group-hover:text-indigo-700 transition-colors">Cetak Rapor</span>
                         </button>
+                        ${!isGuru ? `
                         <button onclick="navigate('surat_kustom')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-orange-400 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center gap-3 group">
                             <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                                 <i class="fas fa-print text-lg"></i>
                             </div>
                             <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700 transition-colors">Buat Surat</span>
-                        </button>
+                        </button>` : ''}
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <!-- Kartu 1: Siswa Aktif -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-shadow relative overflow-hidden group cursor-pointer" onclick="navigate('siswa_aktif')">
                         <div class="absolute -right-6 -bottom-6 text-emerald-50 opacity-40 group-hover:scale-110 transition-transform duration-500"><i class="fas fa-user-graduate text-9xl"></i></div>
                         <div class="flex justify-between items-start mb-6 relative z-10">
@@ -1217,11 +1403,12 @@
                         </div>
                     </div>
                     
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-shadow relative overflow-hidden group cursor-pointer" onclick="navigate('guru')">
-                        <div class="absolute -right-6 -bottom-6 text-blue-50 opacity-40 group-hover:scale-110 transition-transform duration-500"><i class="fas fa-chalkboard-teacher text-9xl"></i></div>
+                    <!-- Kartu 2: Total Guru Aktif -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 ${!isGuru ? 'hover:shadow-xl transition-shadow cursor-pointer' : ''} relative overflow-hidden group" ${!isGuru ? `onclick="navigate('guru_aktif')"` : ''}>
+                        <div class="absolute -right-6 -bottom-6 text-blue-50 opacity-40 ${!isGuru ? 'group-hover:scale-110 transition-transform duration-500' : ''}"><i class="fas fa-chalkboard-teacher text-9xl"></i></div>
                         <div class="flex justify-between items-start mb-6 relative z-10">
                             <div>
-                                <p class="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Total Guru</p>
+                                <p class="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Guru Aktif</p>
                                 <p class="text-4xl font-black text-gray-800">${totalGuru}</p>
                             </div>
                             <div class="bg-blue-100/80 p-3 rounded-xl text-blue-600 shadow-sm"><i class="fas fa-chalkboard-teacher text-2xl"></i></div>
@@ -1238,8 +1425,9 @@
                         </div>
                     </div>
                     
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-shadow relative overflow-hidden group cursor-pointer" onclick="navigate('admin')">
-                        <div class="absolute -right-6 -bottom-6 text-orange-50 opacity-40 group-hover:scale-110 transition-transform duration-500"><i class="fas fa-users-cog text-9xl"></i></div>
+                    <!-- Kartu 3: Tenaga Admin -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 ${!isGuru ? 'hover:shadow-xl transition-shadow cursor-pointer' : ''} relative overflow-hidden group" ${!isGuru ? `onclick="navigate('admin')"` : ''}>
+                        <div class="absolute -right-6 -bottom-6 text-orange-50 opacity-40 ${!isGuru ? 'group-hover:scale-110 transition-transform duration-500' : ''}"><i class="fas fa-users-cog text-9xl"></i></div>
                         <div class="flex justify-between items-start mb-6 relative z-10">
                             <div>
                                 <p class="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Tenaga Admin</p>
@@ -1322,6 +1510,7 @@
             ['VII', 'VIII', 'IX'].forEach(grade => {
                 appData.kelas[grade].forEach((cls, idx) => {
                     const selectedGuru = appData.waliKelas ? appData.waliKelas[cls] : '';
+                    const activeGuru = appData.guru.filter(g => !g.status || g.status === 'Aktif');
                     html += `
                         <tr class="hover:bg-indigo-50/50 transition-colors">
                             <td class="p-3 text-center font-bold text-indigo-900 bg-indigo-50/30 border-r border-gray-100">${idx === 0 ? grade : ''}</td>
@@ -1329,7 +1518,7 @@
                             <td class="p-3">
                                 <select id="wali_${cls}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
                                     <option value="">-- Pilih Guru Wali Kelas --</option>
-                                    ${appData.guru.map(g => `<option value="${g.id}" ${selectedGuru === g.id ? 'selected' : ''}>${g.name} (NIP: ${g.id})</option>`).join('')}
+                                    ${activeGuru.map(g => `<option value="${g.id}" ${selectedGuru === g.id ? 'selected' : ''}>${g.name} (NIP: ${g.id})</option>`).join('')}
                                 </select>
                             </td>
                         </tr>
@@ -1357,8 +1546,10 @@
             const dateStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             let allPegawai = [];
             
+            const activeGuru = appData.guru.filter(g => !g.status || g.status === 'Aktif');
+            
             appData.kepsek.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Kepala Sekolah' }));
-            appData.guru.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Guru Pendidik' }));
+            activeGuru.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Guru Pendidik' }));
             appData.admin.forEach(p => allPegawai.push({ ...p, jabatanCat: 'Tenaga Administrasi' }));
 
             let tableRows = '';
@@ -1471,7 +1662,7 @@
                         <div class="bg-indigo-100 text-indigo-600 p-3 rounded-lg"><i class="fas fa-book-open text-xl"></i></div>
                         <div>
                             <h2 class="text-xl font-bold text-gray-800">Cetak Rapor K-Merdeka</h2>
-                            <p class="text-sm text-gray-500">Pilih kelas dan siswa untuk generate buku rapor otomatis.</p>
+                            <p class="text-sm text-gray-500">Pilih kelas dan siswa untuk generate 4 Lembar Buku Rapor.</p>
                         </div>
                     </div>
                     <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
@@ -1502,11 +1693,11 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto pb-10 w-full bg-gray-300 p-6 rounded-xl flex justify-center">
-                    <div id="printArea" class="w-full max-w-4xl">
-                        <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm w-full">
+                <div class="overflow-x-auto pb-10 w-full bg-gray-300 p-6 rounded-xl flex flex-col items-center">
+                    <div id="printArea" class="w-full flex flex-col items-center gap-6">
+                        <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm w-full max-w-2xl">
                             <i class="fas fa-file-invoice text-4xl mb-3 text-gray-300"></i>
-                            <p>Silakan pilih kelas dan siswa terlebih dahulu untuk menampilkan lembar rapor.</p>
+                            <p>Silakan pilih kelas dan siswa terlebih dahulu untuk menampilkan 4 Lembar Rapor.</p>
                         </div>
                     </div>
                 </div>
@@ -1534,9 +1725,9 @@
             
             if (!studentId) {
                 printArea.innerHTML = `
-                    <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm w-full">
+                    <div class="bg-white p-10 text-center rounded-xl text-gray-500 border-2 border-dashed border-gray-300 shadow-sm w-full max-w-2xl">
                         <i class="fas fa-file-invoice text-4xl mb-3 text-gray-300"></i>
-                        <p>Silakan pilih kelas dan siswa terlebih dahulu untuk menampilkan lembar rapor.</p>
+                        <p>Silakan pilih kelas dan siswa terlebih dahulu untuk menampilkan 4 Lembar Rapor.</p>
                     </div>`;
                 return;
             }
@@ -1574,12 +1765,12 @@
             const stylePrint = `
                 <style>
                     .rapor-wrapper { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
-                    .rapor-page { width: 210mm; min-height: 297mm; padding: 18mm; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); color: black; box-sizing: border-box; position: relative; display: block; margin: 0 auto; }
+                    .rapor-page { width: 210mm; min-height: 297mm; padding: 18mm; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); color: black; box-sizing: border-box; position: relative; display: flex; flex-direction: column; margin: 0 auto; }
                     @media print { 
                         @page { size: A4 portrait; margin: 0; }
                         body, html { background: white; }
                         .rapor-wrapper { gap: 0; display: block; width: 100%; }
-                        .rapor-page { margin: 0 !important; box-shadow: none !important; page-break-after: always; border: none !important; width: 100%; min-height: 100vh; } 
+                        .rapor-page { margin: 0 auto !important; box-shadow: none !important; page-break-after: always; border: none !important; width: 210mm; min-height: 297mm; } 
                         .rapor-page:last-child { page-break-after: auto; } 
                         .input-rapor { border-bottom: none !important; color: black !important; background: transparent !important; }
                     }
@@ -1588,39 +1779,34 @@
                 </style>
             `;
 
-            // LEMBAR 1: SAMPUL (Tata Letak Diperbarui)
+            // LEMBAR 1: SAMPUL
             const page1 = `
-                <div class="rapor-page fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; padding: 50px 30px; min-height: 297mm;">
-                    
-                    <!-- Bagian Atas: Logo dan Judul -->
-                    <div style="width: 100%; text-align: center;">
-                        <img src="${coverLogo}" style="width: 180px; height: 180px; object-fit: contain; margin: 0 auto 30px auto; display: block;">
-                        <h1 style="font-size: 26pt; font-weight: bold; margin-bottom: 15px; letter-spacing: 4px;">RAPOR</h1>
+                <div class="rapor-page fade-in" style="justify-content: space-between; align-items: center; text-align: center; padding: 60px 40px;">
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                        <img src="${coverLogo}" style="width: 200px; height: 200px; object-fit: contain; margin-bottom: 40px;">
+                        <h1 style="font-size: 28pt; font-weight: bold; margin-bottom: 20px; letter-spacing: 4px;">RAPOR</h1>
                         <h2 style="font-size: 16pt; font-weight: bold; letter-spacing: 1px; margin-bottom: 0;">PESERTA DIDIK SEKOLAH MENENGAH PERTAMA<br>(SMP)</h2>
                     </div>
                     
-                    <!-- Bagian Tengah: Nama dan NISN -->
-                    <div style="width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                         <p style="font-size: 12pt; margin-bottom: 15px;">Nama Peserta Didik:</p>
-                        <div style="border: 2px solid black; padding: 15px 30px; width: 70%; max-width: 500px; font-size: 16pt; font-weight: bold; text-transform: uppercase; margin: 0 auto;">
+                        <div style="border: 2px solid black; padding: 15px 30px; width: 80%; max-width: 500px; font-size: 16pt; font-weight: bold; text-transform: uppercase;">
                             ${student.name}
                         </div>
                         <p style="font-size: 12pt; margin-top: 30px; margin-bottom: 5px;">NISN / NIS:</p>
                         <p style="font-size: 14pt; font-weight: bold;">${student.id} / <span contenteditable="true" class="input-rapor">${student.nis || '..........'}</span></p>
                     </div>
                     
-                    <!-- Bagian Bawah: Nama Kementerian -->
-                    <div style="width: 100%; text-align: center;">
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                         <h3 style="font-size: 14pt; font-weight: bold; margin-bottom: 8px;">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h3>
                         <h3 style="font-size: 14pt; font-weight: bold; letter-spacing: 2px; margin-bottom: 0;">REPUBLIK INDONESIA</h3>
                     </div>
-
                 </div>
             `;
 
             // LEMBAR 2: BIODATA SEKOLAH
             const page2 = `
-                <div class="rapor-page fade-in">
+                <div class="rapor-page fade-in" style="justify-content: flex-start;">
                     <h2 style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 40px; margin-bottom: 50px;">RAPOR PESERTA DIDIK DAN<br>PROFIL PESERTA DIDIK</h2>
                     
                     <table style="width: 85%; margin: 0 auto; font-size: 12pt; line-height: 2;">
@@ -1641,7 +1827,7 @@
 
             // LEMBAR 3: BIODATA SISWA
             const page3 = `
-                <div class="rapor-page fade-in">
+                <div class="rapor-page fade-in" style="justify-content: flex-start;">
                     <h2 style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 30px; margin-bottom: 30px;">KETERANGAN PESERTA DIDIK</h2>
                     
                     <table style="width: 90%; margin: 0 auto; font-size: 11pt; line-height: 1.8;">
@@ -1682,7 +1868,7 @@
 
             // LEMBAR 4: LAPORAN NILAI
             const page4 = `
-                <div class="rapor-page fade-in" style="color: black;">
+                <div class="rapor-page fade-in" style="color: black; justify-content: flex-start;">
                     <h2 style="text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 20px;">LAPORAN HASIL BELAJAR (RAPOR)</h2>
                     <table style="width: 100%; margin-bottom: 15px; font-size: 10pt;">
                         <tr><td style="width: 18%;">Nama</td><td style="width: 2%;">:</td><td style="width: 45%; font-weight: bold;">${student.name}</td><td style="width: 15%;">Kelas</td><td style="width: 2%;">:</td><td style="width: 18%; font-weight: bold;">${student.kelas}</td></tr>
@@ -1740,6 +1926,7 @@
         function renderSuratBuilder(page, container) {
             const isCustom = page === 'surat_kustom';
             const isSK = page.startsWith('sk_');
+            const isPersonelLetter = ['surat_lolosButuhGuru', 'surat_pindahGuru', 'surat_lolosButuhSiswa', 'surat_pindahSiswa'].includes(page);
             
             let html = `
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -1757,9 +1944,13 @@
                     <input type="text" id="customSuratTitle" placeholder="Ketik perihal surat..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none">
                     <button onclick="generateCustomSurat()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg text-sm font-medium whitespace-nowrap"><i class="fas fa-magic"></i> Buat</button>
                 </div>`;
-            } else if (isSK) {
-                let options = `<option value="">-- Ketik Manual / Pilih Pegawai --</option>`;
-                let dataSource = page === 'sk_guru' ? appData.guru : appData.admin;
+            } else if (isSK || isPersonelLetter) {
+                let options = `<option value="">-- Ketik Manual / Pilih Personel --</option>`;
+                let dataSource = [];
+                if (page.includes('Guru') || page === 'sk_guru') dataSource = appData.guru;
+                else if (page.includes('Siswa')) dataSource = appData.siswa;
+                else dataSource = appData.admin;
+
                 dataSource.forEach(p => { options += `<option value="${p.id}">${p.name} (${p.id})</option>`; });
 
                 html += `
@@ -1782,7 +1973,13 @@
         function generateSKTemplate(page) {
             const selectedId = document.getElementById('skPersonSelect').value;
             let selectedPerson = null;
-            if (selectedId) selectedPerson = (page === 'sk_guru' ? appData.guru : appData.admin).find(p => p.id === selectedId);
+            if (selectedId) {
+                let dataSource = [];
+                if (page.includes('Guru') || page === 'sk_guru') dataSource = appData.guru;
+                else if (page.includes('Siswa')) dataSource = appData.siswa;
+                else dataSource = appData.admin;
+                selectedPerson = dataSource.find(p => p.id === selectedId);
+            }
             document.getElementById('printArea').innerHTML = getSuratTemplate(page, "", selectedPerson);
         }
 
@@ -1821,31 +2018,196 @@
 
             let isi = '', meta = '';
 
+            // 1. LOGIKA UNTUK MENU SK PENGANGKATAN
             if (type.startsWith('sk_')) {
-                let skTitle = '', roleName = '', jobDesc = '';
-                if (type === 'sk_guru') { skTitle = 'PENGANGKATAN GURU HONORER'; roleName = 'Guru Honorer'; jobDesc = 'merencanakan dan melaksanakan proses pembelajaran'; } 
-                else { skTitle = 'PENGANGKATAN PEGAWAI'; roleName = 'Pegawai'; jobDesc = 'melaksanakan tugas yang diberikan'; }
-                let namaPegawai = selectedPerson ? selectedPerson.name : '[Ketik Nama Lengkap]';
+                let skTitle = '', roleName = '';
+                
+                if (type === 'sk_guru') { skTitle = 'PENGANGKATAN GURU HONORER (GURU TIDAK TETAP)'; roleName = 'Guru Honorer (GTT)'; }
+                else if (type === 'sk_admin') { skTitle = 'PENGANGKATAN TENAGA ADMINISTRASI SEKOLAH'; roleName = 'Tenaga Administrasi (PTT)'; }
+                else if (type === 'sk_perpus') { skTitle = 'PENGANGKATAN PENJAGA PERPUSTAKAAN'; roleName = 'Penjaga Perpustakaan'; }
+                else if (type === 'sk_sekolah') { skTitle = 'PENGANGKATAN PENJAGA SEKOLAH'; roleName = 'Penjaga Sekolah'; }
+                else if (type === 'sk_kebersihan') { skTitle = 'PENGANGKATAN TENAGA KEBERSIHAN'; roleName = 'Tenaga Kebersihan'; }
+                else { skTitle = 'PENGANGKATAN PEGAWAI'; roleName = 'Pegawai'; }
+                
+                let namaPegawai = selectedPerson ? selectedPerson.name : '[Pilih Pegawai / Ketik Nama]';
+                let pendidikanPegawai = selectedPerson && selectedPerson.pendidikan && selectedPerson.pendidikan !== '-' ? selectedPerson.pendidikan : '[Ketik Pendidikan]';
+                let mapelPegawai = selectedPerson && selectedPerson.mapel && selectedPerson.mapel.length > 0 ? selectedPerson.mapel.join(', ') : '[Ketik Mata Pelajaran/Tugas]';
+                
+                if (type !== 'sk_guru') mapelPegawai = roleName;
 
                 isi = `
-                    <h3 style="text-align: center; text-decoration: underline; margin-bottom: 0; font-size: 14pt;">KEPUTUSAN KEPALA SEKOLAH</h3>
-                    <p style="text-align: center; margin-top: 0; margin-bottom: 30px;">Nomor: 421/..../SK/2026</p>
-                    <p style="text-align: center; font-weight: bold;">TENTANG<br>${skTitle}</p>
-                    <p style="text-align: justify; margin-top: 30px;">Menimbang dan seterusnya... Mengingat dan seterusnya...</p>
-                    <p style="text-align: center; font-weight: bold; margin: 30px 0;">MEMUTUSKAN:</p>
-                    <p style="text-align: justify;">Menetapkan Saudara/i <strong>${namaPegawai}</strong> sebagai ${roleName}.</p>
+                    <h3 style="text-align: center; text-decoration: underline; margin-bottom: 5px; font-size: 14pt;">KEPUTUSAN KEPALA SMP NEGERI 6 MAMOSALATO</h3>
+                    <p style="text-align: center; margin-top: 0; margin-bottom: 25px;">Nomor: 421/<span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">.....</span>/SMPN6/2026</p>
+                    
+                    <p style="text-align: center; font-weight: bold; margin-bottom: 25px;">TENTANG<br>${skTitle}<br>TAHUN PELAJARAN 2026/2027</p>
+                    
+                    <table style="width: 100%; font-size: 11pt; margin-bottom: 15px; line-height: 1.5;">
+                        <tr>
+                            <td style="width: 12%; vertical-align: top;"><strong>Menimbang</strong></td>
+                            <td style="width: 3%; vertical-align: top;">:</td>
+                            <td style="width: 4%; vertical-align: top;">a.</td>
+                            <td style="text-align: justify;">Bahwa untuk kelancaran pelaksanaan proses belajar mengajar dan administrasi di SMP Negeri 6 Mamosalato, maka dipandang perlu untuk mengangkat ${roleName};</td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td>
+                            <td style="vertical-align: top;">b.</td>
+                            <td style="text-align: justify;">Bahwa nama yang tercantum dalam Surat Keputusan ini dipandang cakap, mampu, dan memenuhi syarat untuk diangkat sebagai ${roleName} di SMP Negeri 6 Mamosalato.</td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; font-size: 11pt; margin-bottom: 25px; line-height: 1.5;">
+                        <tr>
+                            <td style="width: 12%; vertical-align: top;"><strong>Mengingat</strong></td>
+                            <td style="width: 3%; vertical-align: top;">:</td>
+                            <td style="width: 4%; vertical-align: top;">1.</td>
+                            <td style="text-align: justify;">Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;</td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td>
+                            <td style="vertical-align: top;">2.</td>
+                            <td style="text-align: justify;">Peraturan Pemerintah Nomor 19 Tahun 2005 tentang Standar Nasional Pendidikan;</td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td>
+                            <td style="vertical-align: top;">3.</td>
+                            <td style="text-align: justify;">Peraturan Menteri Pendidikan dan Kebudayaan yang relevan dengan penugasan guru dan tenaga kependidikan.</td>
+                        </tr>
+                    </table>
+
+                    <p style="text-align: center; font-weight: bold; margin: 20px 0; font-size: 12pt; letter-spacing: 2px;">MEMUTUSKAN:</p>
+                    
+                    <table style="width: 100%; font-size: 11pt; margin-bottom: 10px; line-height: 1.5;">
+                        <tr>
+                            <td style="width: 12%; vertical-align: top;"><strong>Menetapkan</strong></td>
+                            <td style="width: 3%; vertical-align: top;">:</td>
+                            <td style="text-align: justify;"></td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;"><strong>PERTAMA</strong></td>
+                            <td style="vertical-align: top;">:</td>
+                            <td style="text-align: justify;">Mengangkat Saudara/i:</td>
+                        </tr>
+                    </table>
+                    
+                    <table style="width: 75%; font-size: 11pt; margin-bottom: 20px; margin-left: 15%; line-height: 1.5;">
+                        <tr><td style="width: 35%;">Nama</td><td style="width: 5%;">:</td><td style="font-weight: bold;">${namaPegawai}</td></tr>
+                        <tr><td>Tempat, Tgl Lahir</td><td>:</td><td><span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Tempat, Tgl Lahir]</span></td></tr>
+                        <tr><td>Pendidikan Terakhir</td><td>:</td><td><span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${pendidikanPegawai}</span></td></tr>
+                        <tr><td style="vertical-align: top;">Tugas / Mata Pelajaran</td><td style="vertical-align: top;">:</td><td style="vertical-align: top; font-weight: bold;"><span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${mapelPegawai}</span></td></tr>
+                    </table>
+
+                    <table style="width: 100%; font-size: 11pt; margin-bottom: 15px; line-height: 1.5;">
+                        <tr>
+                            <td style="width: 12%; vertical-align: top;"><strong>KEDUA</strong></td>
+                            <td style="width: 3%; vertical-align: top;">:</td>
+                            <td style="text-align: justify;">Kepadanya diberikan honorarium sesuai dengan kemampuan keuangan dan Rencana Kegiatan dan Anggaran Sekolah (RKAS) SMP Negeri 6 Mamosalato.</td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;"><strong>KETIGA</strong></td>
+                            <td style="vertical-align: top;">:</td>
+                            <td style="text-align: justify;">Segala biaya yang timbul akibat pelaksanaan keputusan ini dibebankan pada anggaran yang sesuai.</td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;"><strong>KEEMPAT</strong></td>
+                            <td style="vertical-align: top;">:</td>
+                            <td style="text-align: justify;">Keputusan ini mulai berlaku sejak tanggal ditetapkan, dengan ketentuan apabila dikemudian hari terdapat kekeliruan, maka akan diperbaiki sebagaimana mestinya.</td>
+                        </tr>
+                    </table>
                 `;
+            
+            // 2. LOGIKA UNTUK MENU SURAT DINAS
             } else {
                 let perihalText = customTitle || 'Undangan Resmi';
+                
+                if (type === 'surat_tugas') perihalText = 'Surat Tugas';
+                else if (type === 'surat_lolosButuhGuru') perihalText = 'Keterangan Lolos Butuh Guru';
+                else if (type === 'surat_pindahGuru') perihalText = 'Rekomendasi Pindah Tugas Guru';
+                else if (type === 'surat_lolosButuhSiswa') perihalText = 'Keterangan Bersedia Menerima Siswa Pindahan';
+                else if (type === 'surat_pindahSiswa') perihalText = 'Keterangan Pindah Sekolah Siswa';
+                else if (type === 'surat_rapatGuru') perihalText = 'Undangan Rapat Dewan Guru';
+                else if (type === 'surat_teguran') perihalText = 'Surat Teguran Pegawai';
+                else if (type === 'surat_rapatKomite') perihalText = 'Undangan Rapat Komite Sekolah';
+                else if (type === 'surat_panggilanOrtu') perihalText = 'Panggilan Orang Tua Siswa';
+                else if (type === 'surat_sosialisasi') perihalText = 'Undangan Sosialisasi Program Sekolah';
+                else if (type === 'surat_gotongRoyong') perihalText = 'Pemberitahuan Kegiatan Gotong Royong';
+
+                let isiSurat = '';
+                
+                if (type === 'surat_tugas') {
+                     isiSurat = `<p style="text-align: justify;">Kepala SMP Negeri 6 Mamosalato dengan ini menugaskan kepada: <br><br><strong>[Ketik Nama Pegawai]</strong><br>[Ketik Jabatan]<br><br>Untuk melaksanakan tugas [Ketik Rincian Tugas] pada [Ketik Tanggal dan Tempat].</p><p style="text-align: justify;">Demikian Surat Tugas ini dibuat untuk dilaksanakan dengan penuh tanggung jawab.</p>`;
+                } else if (type === 'surat_teguran') {
+                     isiSurat = `<p style="text-align: justify;">Berdasarkan hasil evaluasi dan pemantauan kinerja, dengan ini kami memberikan Surat Teguran kepada:<br><br><strong>[Ketik Nama Pegawai]</strong><br>[Ketik Jabatan]<br><br>Teguran ini diberikan atas tindakan pelanggaran kedisiplinan berupa [Ketik Alasan Teguran]. Kami harap Saudara/i dapat memperbaiki kinerja dan kedisiplinan ke depannya.</p><p style="text-align: justify;">Demikian surat teguran ini dibuat untuk menjadi perhatian.</p>`;
+                } else if (type === 'surat_lolosButuhGuru') {
+                     const nama = selectedPerson ? selectedPerson.name : '[Nama Guru]';
+                     const nip = selectedPerson ? selectedPerson.id : '[NIP/NIK]';
+                     isiSurat = `<p style="text-align: justify;">Yang bertanda tangan di bawah ini Kepala SMP Negeri 6 Mamosalato, dengan ini menerangkan bahwa:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 150px;">Nama Lengkap</td><td>: <strong>${nama}</strong></td></tr>
+                        <tr><td>NIP / NUPTK</td><td>: ${nip}</td></tr>
+                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Jabatan]</span></td></tr>
+                        <tr><td>Asal/Tujuan Instansi</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Sekolah Asal/Tujuan]</span></td></tr>
+                     </table>
+                     <p style="text-align: justify;">Pada prinsipnya kami menyatakan <strong>Bersedia Menerima / Bersedia Melepas</strong> <i style="font-size: 10px;">(*coret yang tidak perlu)</i> guru tersebut di atas sepanjang tidak bertentangan dengan peraturan perundang-undangan yang berlaku, serta mutasi tersebut disetujui oleh Dinas Pendidikan Daerah terkait.</p>
+                     <p style="text-align: justify;">Demikian surat keterangan lolos butuh ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>`;
+                } else if (type === 'surat_pindahGuru') {
+                     const nama = selectedPerson ? selectedPerson.name : '[Nama Guru]';
+                     const nip = selectedPerson ? selectedPerson.id : '[NIP/NIK]';
+                     isiSurat = `<p style="text-align: justify;">Yang bertanda tangan di bawah ini Kepala SMP Negeri 6 Mamosalato, dengan ini memberikan Rekomendasi Pindah Tugas kepada:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 150px;">Nama Lengkap</td><td>: <strong>${nama}</strong></td></tr>
+                        <tr><td>NIP / NUPTK</td><td>: ${nip}</td></tr>
+                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Jabatan]</span></td></tr>
+                        <tr><td>Sekolah Tujuan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Sekolah Tujuan]</span></td></tr>
+                     </table>
+                     <p style="text-align: justify;">Sesuai dengan permohonan yang bersangkutan tertanggal <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Tanggal Surat Pemohon]</span> perihal permohonan pindah tugas karena alasan <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Alasan Pindah]</span>.</p>
+                     <p style="text-align: justify;">Selama bertugas di SMP Negeri 6 Mamosalato, yang bersangkutan telah melaksanakan tugas dengan baik. Demikian surat rekomendasi ini dibuat agar dapat dijadikan bahan pertimbangan selanjutnya.</p>`;
+                } else if (type === 'surat_lolosButuhSiswa') {
+                     const nama = selectedPerson ? selectedPerson.name : '[Nama Siswa]';
+                     const nisn = selectedPerson ? selectedPerson.id : '[NISN]';
+                     const kelas = selectedPerson && selectedPerson.kelas ? selectedPerson.kelas : '[Kelas]';
+                     isiSurat = `<p style="text-align: justify;">Yang bertanda tangan di bawah ini Kepala SMP Negeri 6 Mamosalato, dengan ini menerangkan bahwa:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 150px;">Nama Siswa</td><td>: <strong>${nama}</strong></td></tr>
+                        <tr><td>NISN</td><td>: ${nisn}</td></tr>
+                        <tr><td>Kelas yang Diterima</td><td>: ${kelas}</td></tr>
+                        <tr><td>Sekolah Asal</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Sekolah Asal]</span></td></tr>
+                     </table>
+                     <p style="text-align: justify;">Berdasarkan permohonan dari orang tua/wali siswa, pada prinsipnya kami <strong>Bersedia Menerima</strong> siswa tersebut untuk dididik di SMP Negeri 6 Mamosalato, dengan catatan bahwa seluruh administrasi mutasi dari sekolah asal (Surat Pindah & Buku Rapor) telah dipenuhi dan dinyatakan sah.</p>
+                     <p style="text-align: justify;">Demikian surat keterangan ini kami buat untuk dapat dipergunakan dalam pengurusan mutasi siswa yang bersangkutan.</p>`;
+                } else if (type === 'surat_pindahSiswa') {
+                     const nama = selectedPerson ? selectedPerson.name : '[Nama Siswa]';
+                     const nisn = selectedPerson ? selectedPerson.id : '[NISN]';
+                     const kelas = selectedPerson && selectedPerson.kelas ? selectedPerson.kelas : '[Kelas]';
+                     isiSurat = `<p style="text-align: justify;">Yang bertanda tangan di bawah ini Kepala SMP Negeri 6 Mamosalato, menerangkan dengan sesungguhnya bahwa:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 150px;">Nama Siswa</td><td>: <strong>${nama}</strong></td></tr>
+                        <tr><td>NISN</td><td>: ${nisn}</td></tr>
+                        <tr><td>Tingkat / Kelas</td><td>: ${kelas}</td></tr>
+                        <tr><td>Sekolah Tujuan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Sekolah Tujuan]</span></td></tr>
+                        <tr><td>Alasan Pindah</td><td>: Mengikuti Orang Tua / Wali</td></tr>
+                     </table>
+                     <p style="text-align: justify;">Siswa tersebut di atas telah mengajukan permohonan pindah sekolah atas permintaan orang tua/walinya. Bersama surat keterangan ini, kami lampirkan juga Buku Laporan Hasil Belajar (Rapor) asli dari siswa yang bersangkutan.</p>
+                     <p style="text-align: justify;">Demikian Surat Keterangan Pindah ini dibuat agar dapat dipergunakan sebagaimana mestinya.</p>`;
+                } else {
+                     isiSurat = `<p>Dengan hormat,</p><p style="text-align: justify;">Sehubungan dengan pelaksanaan agenda sekolah, dengan ini kami mengharap kehadiran Bapak/Ibu pada:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 120px;">Hari/Tanggal</td><td>: [Ketik Hari dan Tanggal]</td></tr>
+                        <tr><td>Waktu</td><td>: [Ketik Jam] s.d. Selesai</td></tr>
+                        <tr><td>Tempat</td><td>: [Ketik Tempat/Ruangan]</td></tr>
+                        <tr><td>Agenda</td><td>: [Ketik Tujuan Kegiatan]</td></tr>
+                     </table>
+                     <p style="text-align: justify;">Mengingat pentingnya acara tersebut, kami mohon kehadiran Bapak/Ibu tepat pada waktunya. Demikian undangan ini kami sampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.</p>`;
+                }
+
                 meta = `
                     <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                         <table style="width: 60%;"><tr><td style="width: 70px;">Nomor</td><td style="width: 10px;">:</td><td>421/..../SMPN6/2026</td></tr><tr><td>Perihal</td><td>:</td><td style="font-weight: bold;">${perihalText}</td></tr></table>
-                        <div style="width: 35%;"><p style="margin: 0;">Mamosalato, ${dateStr}</p><p style="margin: 10px 0 0 0;">Yth. <br>[Penerima]<br>di Tempat</p></div>
+                        <div style="width: 35%;"><p style="margin: 0;">Mamosalato, ${dateStr}</p><p style="margin: 10px 0 0 0;">Yth. <br>[Ketik Nama Penerima]<br>di Tempat</p></div>
                     </div>
                 `;
-                isi = `<p>Dengan hormat,</p><p style="text-align: justify;">Sehubungan dengan [Tulis Alasan], dengan ini kami mengharap kehadiran Bapak/Ibu pada [Tulis Waktu dan Tempat].</p><p style="text-align: justify;">Demikian undangan ini kami sampaikan.</p>`;
+                isi = meta + isiSurat;
             }
-            return kopSurat + meta + isi + penutup;
+            return kopSurat + isi + penutup;
         }
 
         function renderPengaturanLogo(container) {
@@ -1854,7 +2216,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center">
                         <h3 class="font-semibold text-gray-700 mb-2">Logo Kiri (Kabupaten)</h3>
-                        <p class="text-xs text-gray-500 mb-4">Maksimal 200KB</p>
+                        <p class="text-xs text-gray-500 mb-4">Maksimal 200 KB</p>
                         <div class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-4 bg-gray-50 overflow-hidden relative group">
                             ${appData.pengaturan.logoKiri ? `<img src="${appData.pengaturan.logoKiri}" class="w-full h-full object-contain p-2"><div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center"><button onclick="hapusLogo('logoKiri')" class="bg-red-500 text-white rounded-full p-2 hover:bg-red-600"><i class="fas fa-trash"></i></button></div>` : `<i class="fas fa-image text-3xl text-gray-300"></i>`}
                         </div>
@@ -1863,7 +2225,7 @@
                     </div>
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center">
                         <h3 class="font-semibold text-gray-700 mb-2">Logo Kanan (Sekolah)</h3>
-                        <p class="text-xs text-gray-500 mb-4">Maksimal 200KB</p>
+                        <p class="text-xs text-gray-500 mb-4">Maksimal 200 KB</p>
                         <div class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-4 bg-gray-50 overflow-hidden relative group">
                             ${appData.pengaturan.logoKanan ? `<img src="${appData.pengaturan.logoKanan}" class="w-full h-full object-contain p-2"><div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center"><button onclick="hapusLogo('logoKanan')" class="bg-red-500 text-white rounded-full p-2 hover:bg-red-600"><i class="fas fa-trash"></i></button></div>` : `<i class="fas fa-image text-3xl text-gray-300"></i>`}
                         </div>
@@ -1874,39 +2236,24 @@
             `;
         }
 
-        async function prosesUploadLogo(event, posisi) {
+        function prosesUploadLogo(event, posisi) {
             const file = event.target.files[0];
             if (!file) return;
             if (file.size > 200 * 1024) {
-                showAppDialog('alert', 'Ukuran File Kebesaran', 'Maksimal ukuran logo adalah 200KB.');
-                event.target.value = '';
-                return;
+                showAppDialog('alert', 'Ukuran File Terlalu Besar', 'Maksimal ukuran logo adalah 200 KB untuk menjaga agar database SIAKAD tetap ringan dan cepat.');
+                event.target.value = ''; return;
             }
 
-            const btn = posisi === 'logoKiri' ? document.getElementById('btnUploadLogoKiri') : document.getElementById('btnUploadLogoKanan');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
-            btn.disabled = true;
-
             const reader = new FileReader();
-            reader.onload = async function(e) {
-                const oldData = appData.pengaturan[posisi];
+            reader.onload = function(e) {
                 appData.pengaturan[posisi] = e.target.result;
-                try {
-                    await saveDataLocally();
-                    renderContent('pengaturan_logo'); 
-                } catch (error) {
-                    appData.pengaturan[posisi] = oldData;
-                    showAppDialog('alert', 'Gagal Disimpan', 'Kapasitas database Cloud penuh. Gagal menyimpan logo.');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
+                saveDataLocally().then(() => renderContent('pengaturan_logo'));
             };
             reader.readAsDataURL(file);
         }
 
         function hapusLogo(posisi) {
-            showAppDialog('confirm', 'Hapus Logo?', 'Logo ini akan dihapus dari sistem.', () => {
+            showAppDialog('confirm', 'Hapus Logo?', 'Logo ini akan dihapus dari sistem.', async () => {
                 appData.pengaturan[posisi] = null;
                 saveDataLocally().then(() => renderContent('pengaturan_logo'));
             });
@@ -1921,11 +2268,10 @@
         function savePerson() {
             const category = document.getElementById('formCategory').value;
             const oldId = document.getElementById('formId').value;
-            const role = sessionStorage.getItem('siakad_role');
-            const isAdmin = (role === 'Super Admin' || role === 'Administrator');
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin');
             
-            // The person's category key in appData is always 'siswa', 'guru', etc., even if the page is 'siswa_aktif'
-            const dataCategory = category.startsWith('siswa') ? 'siswa' : category;
+            const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
             
             const newPerson = {
                 id: document.getElementById('inputId').value,
@@ -1947,7 +2293,7 @@
                 newPerson.pekerjaanIbu = document.getElementById('inputPekerjaanIbu').value;
                 newPerson.namaWali = document.getElementById('inputNamaWali').value;
                 newPerson.pekerjaanWali = document.getElementById('inputPekerjaanWali').value;
-                newPerson.status = 'Aktif'; // Default new student status
+                newPerson.status = 'Aktif'; 
             } else {
                 newPerson.nuptk = document.getElementById('inputNuptk').value;
                 newPerson.jabatan = document.getElementById('inputJabatan').value;
@@ -1958,11 +2304,12 @@
                 newPerson.pendidikan = document.getElementById('inputPendidikan').value;
                 newPerson.jurusan = document.getElementById('inputJurusan').value;
                 
-                if (dataCategory === 'guru' && isAdmin) {
-                    newPerson.username = document.getElementById('inputUsername').value;
-                    newPerson.password = document.getElementById('inputPassword').value;
-                }
                 if (dataCategory === 'guru') {
+                    newPerson.status = 'Aktif'; 
+                    if (isAdmin) {
+                        newPerson.username = document.getElementById('inputUsername').value;
+                        newPerson.password = document.getElementById('inputPassword').value;
+                    }
                     newPerson.mapel = Array.from(document.querySelectorAll('.mapel-checkbox:checked')).map(cb => cb.value);
                 }
             }
@@ -1973,10 +2320,17 @@
                 const index = appData[dataCategory].findIndex(p => p.id === oldId);
                 if (index > -1) {
                     newPerson.documents = appData[dataCategory][index].documents || [];
-                    if (dataCategory === 'siswa') newPerson.status = appData[dataCategory][index].status || 'Aktif'; // Keep existing status
-                    if (dataCategory === 'guru' && !isAdmin) {
-                         newPerson.username = appData[dataCategory][index].username;
-                         newPerson.password = appData[dataCategory][index].password;
+                    if (dataCategory === 'siswa') newPerson.status = appData[dataCategory][index].status || 'Aktif';
+                    if (dataCategory === 'guru') {
+                         newPerson.status = appData[dataCategory][index].status || 'Aktif';
+                         newPerson.tglSurat = appData[dataCategory][index].tglSurat || '';
+                         newPerson.sekolahTujuan = appData[dataCategory][index].sekolahTujuan || '';
+                         newPerson.alasan = appData[dataCategory][index].alasan || '';
+                         
+                         if (!isAdmin) {
+                             newPerson.username = appData[dataCategory][index].username;
+                             newPerson.password = appData[dataCategory][index].password;
+                         }
                     }
                     appData[dataCategory][index] = newPerson;
                 }
@@ -1992,8 +2346,8 @@
         }
 
         function deletePerson(category, id) {
-            const dataCategory = category.startsWith('siswa') ? 'siswa' : category;
-            showAppDialog('confirm', 'Hapus Personel?', 'Yakin menghapus data ini beserta dokumennya?', () => {
+            const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
+            showAppDialog('confirm', 'Hapus Personel?', 'Yakin menghapus data ini beserta link dokumennya?', () => {
                 appData[dataCategory] = appData[dataCategory].filter(p => p.id !== id);
                 saveDataLocally().then(() => renderContent(currentCategory));
             });
@@ -2002,99 +2356,113 @@
         function editPerson(category, id) { openPersonModal(category, id); }
 
         function openDocumentModal(category, id) {
-            activePersonCategory = category.startsWith('siswa') ? 'siswa' : category;
+            activePersonCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
             activePersonId = id;
             const person = appData[activePersonCategory].find(p => p.id === id);
             if (!person) return;
             document.getElementById('docModalSubtitle').innerText = `${person.name} (${person.id})`;
+            
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
+            
+            const modalBody = document.querySelector('#documentModal .flex-1.flex');
+            const addPanel = modalBody.children[0]; 
+            const listPanel = modalBody.children[1]; 
+            
+            if (!isAdmin) {
+                addPanel.style.display = 'none';
+                listPanel.classList.remove('md:w-2/3');
+                listPanel.classList.add('w-full');
+            } else {
+                addPanel.style.display = 'flex';
+                listPanel.classList.remove('w-full');
+                listPanel.classList.add('md:w-2/3');
+            }
+
             renderDocumentList(person);
+            
+            document.getElementById('inputDocName').value = '';
+            document.getElementById('inputDocUrl').value = '';
+            
             document.getElementById('documentModal').classList.remove('hidden');
         }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.size > 200 * 1024) { 
-                    showAppDialog('alert', 'File Terbesar', 'Maksimal ukuran file 200KB untuk mode Cloud agar database tidak penuh.');
-                    event.target.value = ''; return;
-                }
-                selectedFile = file;
-                document.getElementById('fileNameDisplay').innerText = file.name;
-                document.getElementById('fileNameDisplay').classList.remove('text-indigo-600');
-                document.getElementById('fileNameDisplay').classList.add('text-gray-800', 'font-semibold');
-            }
-        }
-
         async function uploadDocument() {
-            if (!selectedFile) { showAppDialog('alert', 'Pilih File', 'Silakan pilih file dokumen terlebih dahulu!'); return; }
-            
-            const btn = document.getElementById('btnUploadDoc');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan ke Cloud...';
-            btn.disabled = true;
-
+            const docUrl = document.getElementById('inputDocUrl').value.trim();
+            const docName = document.getElementById('inputDocName').value.trim();
             const docType = document.getElementById('docType').value;
+            
+            if (!docUrl || !docName) { 
+                showAppDialog('alert', 'Form Belum Lengkap', 'Silakan isi Nama File dan Link Google Drive secara lengkap.'); 
+                return; 
+            }
+
             const personIndex = appData[activePersonCategory].findIndex(p => p.id === activePersonId);
-            if (personIndex === -1) { btn.innerHTML = originalHtml; btn.disabled = false; return; }
+            if (personIndex === -1) return;
 
             if (!appData[activePersonCategory][personIndex].documents) appData[activePersonCategory][personIndex].documents = [];
             
-            const reader = new FileReader();
-            reader.onload = async function(e) {
+            const btn = document.getElementById('btnUploadDoc');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btn.disabled = true;
+
+            try {
                 const newDoc = {
                     id: Date.now(),
                     type: docType,
-                    name: selectedFile.name,
+                    name: docName,
                     date: new Date().toISOString().split('T')[0],
-                    size: (selectedFile.size / 1024).toFixed(1) + ' KB',
-                    data: e.target.result 
+                    size: 'Link GDrive',
+                    data: docUrl 
                 };
 
                 appData[activePersonCategory][personIndex].documents.push(newDoc);
+                await saveDataLocally();
                 
-                try {
-                    await saveDataLocally();
-                    
-                    selectedFile = null;
-                    document.getElementById('fileUpload').value = '';
-                    document.getElementById('fileNameDisplay').innerText = 'Klik untuk memilih file';
-                    document.getElementById('fileNameDisplay').className = 'text-indigo-600 font-medium relative cursor-pointer rounded-md focus-within:outline-none hover:text-indigo-500';
-                    
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                    closeModal('documentModal');
-                    renderContent(currentCategory); 
-                    showToast('Dokumen berhasil diunggah', 'success');
-                } catch (error) {
-                    appData[activePersonCategory][personIndex].documents.pop(); 
-                    showAppDialog('alert', 'Cloud Penuh', 'Kapasitas database Cloud sudah penuh (Batas 1MB tercapai). Gagal mengunggah file.');
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                }
-            };
-            reader.readAsDataURL(selectedFile);
+                document.getElementById('inputDocUrl').value = '';
+                document.getElementById('inputDocName').value = '';
+                
+                closeModal('documentModal');
+                renderContent(currentCategory); 
+                showToast('Link dokumen berhasil ditambahkan', 'success');
+            } catch (error) {
+                showAppDialog('alert', 'Gagal', 'Terjadi kesalahan saat menyimpan data.');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
 
         function renderDocumentList(person) {
             const listContainer = document.getElementById('documentList');
             const docs = person.documents || [];
+            
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
+
             listContainer.innerHTML = '';
             if (docs.length === 0) {
-                listContainer.innerHTML = `<div class="col-span-full p-10 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50"><p class="text-gray-500">Belum ada dokumen tersimpan.</p></div>`;
+                listContainer.innerHTML = `<div class="col-span-full p-10 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50"><p class="text-gray-500">Belum ada link dokumen tersimpan.</p></div>`;
                 return;
             }
             docs.forEach(doc => {
+                let deleteBtnHtml = '';
+                if (isAdmin) {
+                    deleteBtnHtml = `<button onclick="deleteDocument(${doc.id})" class="text-red-500 p-2 hover:bg-red-50 rounded-md transition-colors" title="Hapus Link"><i class="fas fa-trash-alt"></i></button>`;
+                }
+
                 listContainer.innerHTML += `
                     <div class="bg-white border border-gray-200 rounded-lg p-3 flex items-start gap-3 relative">
-                        <div class="bg-gray-50 p-3 rounded-lg"><i class="fas fa-file-alt text-2xl text-gray-500"></i></div>
+                        <div class="bg-gray-50 p-3 rounded-lg"><i class="fab fa-google-drive text-2xl text-blue-500"></i></div>
                         <div class="flex-1 min-w-0">
                             <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700 mb-1">${doc.type}</span>
-                            <p class="text-sm font-semibold text-gray-800 truncate">${doc.name}</p>
-                            <p class="text-[11px] text-gray-500">${doc.size}</p>
+                            <p class="text-sm font-semibold text-gray-800 truncate" title="${doc.name}">${doc.name}</p>
+                            <p class="text-[11px] text-gray-500 truncate" title="${doc.data}">G-Drive Link</p>
                         </div>
-                        <div class="flex flex-col gap-1">
-                            <button onclick="downloadDocument(${doc.id})" class="text-blue-500 p-2"><i class="fas fa-download"></i></button>
-                            <button onclick="deleteDocument(${doc.id})" class="text-red-500 p-2"><i class="fas fa-trash-alt"></i></button>
+                        <div class="flex flex-col gap-1 justify-center">
+                            <button onclick="downloadDocument(${doc.id})" class="text-blue-500 p-2 hover:bg-blue-50 rounded-md transition-colors" title="Buka Link"><i class="fas fa-external-link-alt"></i></button>
+                            ${deleteBtnHtml}
                         </div>
                     </div>`;
             });
@@ -2104,18 +2472,13 @@
             const person = appData[activePersonCategory].find(p => p.id === activePersonId);
             if (!person) return;
             const doc = person.documents.find(d => d.id === docId);
-            if (!doc || !doc.data) { showAppDialog('alert', 'Error', 'Data file kosong atau rusak.'); return; }
+            if (!doc || !doc.data) { showAppDialog('alert', 'Error', 'Data link kosong atau rusak.'); return; }
 
-            const a = document.createElement('a');
-            a.href = doc.data;
-            a.download = doc.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            window.open(doc.data, '_blank');
         }
 
         function deleteDocument(docId) {
-            showAppDialog('confirm', 'Hapus Dokumen?', 'Hapus permanen dokumen ini?', () => {
+            showAppDialog('confirm', 'Hapus Link Dokumen?', 'Link ini akan dihapus dari daftar.', async () => {
                 const personIndex = appData[activePersonCategory].findIndex(p => p.id === activePersonId);
                 if (personIndex > -1) {
                     appData[activePersonCategory][personIndex].documents = appData[activePersonCategory][personIndex].documents.filter(d => d.id !== docId);
@@ -2165,7 +2528,7 @@
                             <td class="p-4 text-gray-600">${item.id}</td>
                             <td class="p-4 text-gray-600">${item.jabatan || '-'}</td>
                             <td class="p-4 text-gray-600">${item.gender === 'Laki-laki' ? 'L' : 'P'}</td>
-                            <td class="p-4 text-center"><button onclick="openDocumentModal('${category}', '${item.id}')" class="px-3 py-1.5 rounded-full ${docCount>0?'bg-indigo-50 text-indigo-700':'bg-gray-100 text-gray-500'} text-xs font-medium"><i class="fas fa-folder"></i> ${docCount} File</button></td>
+                            <td class="p-4 text-center"><button onclick="openDocumentModal('${category}', '${item.id}')" class="px-3 py-1.5 rounded-full ${docCount>0?'bg-indigo-50 text-indigo-700':'bg-gray-100 text-gray-500'} text-xs font-medium"><i class="fas fa-link"></i> ${docCount} Link</button></td>
                             <td class="p-4 text-center sticky right-0 bg-white">
                                 <div class="flex justify-center gap-2">
                                     <button onclick="editPerson('${category}', '${item.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-md"><i class="fas fa-edit"></i></button>
@@ -2187,7 +2550,7 @@
                         <div class="${info.bg} ${info.color} p-3 rounded-lg"><i class="fas ${info.icon} text-xl"></i></div>
                         <div><h2 class="text-xl font-bold text-gray-800">${info.title}</h2></div>
                     </div>
-                    <button onclick="openSekolahDocModal('${category}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-upload"></i> Unggah Dokumen</button>
+                    <button onclick="openSekolahDocModal('${category}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Arsip</button>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="overflow-x-auto">
@@ -2199,7 +2562,7 @@
             if (data.length === 0) { html += `<tr><td colspan="5" class="p-8 text-center text-gray-500">Belum ada arsip.</td></tr>`; } 
             else {
                 data.forEach((item, index) => {
-                    html += `<tr><td class="p-4 text-center">${index + 1}</td><td class="p-4">${item.noSurat}</td><td class="p-4">${item.perihal}</td><td class="p-4">${item.tanggal}</td><td class="p-4"><button onclick="downloadSekolahDoc('${category}', ${item.id})" class="text-blue-500 mr-2"><i class="fas fa-download"></i></button><button onclick="deleteSekolahDoc('${category}', ${item.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+                    html += `<tr><td class="p-4 text-center">${index + 1}</td><td class="p-4">${item.noSurat}</td><td class="p-4">${item.perihal}</td><td class="p-4">${item.tanggal}</td><td class="p-4"><button onclick="downloadSekolahDoc('${category}', ${item.id})" class="text-blue-500 bg-blue-50 p-2 rounded-md mr-2" title="Buka Link GDrive"><i class="fas fa-external-link-alt"></i></button><button onclick="deleteSekolahDoc('${category}', ${item.id})" class="text-red-500 bg-red-50 p-2 rounded-md"><i class="fas fa-trash"></i></button></td></tr>`;
                 });
             }
             html += `</tbody></table></div></div>`;
@@ -2212,9 +2575,9 @@
             document.getElementById('personForm').reset();
             
             const isSiswa = category.startsWith('siswa');
-            const isGuru = category === 'guru';
-            const role = sessionStorage.getItem('siakad_role');
-            const isAdmin = (role === 'Super Admin' || role === 'Administrator');
+            const isGuru = category.startsWith('guru');
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin');
 
             document.getElementById('siswaFields').classList.toggle('hidden', !isSiswa);
             document.getElementById('pegawaiFields').classList.toggle('hidden', isSiswa);
@@ -2235,7 +2598,7 @@
             document.getElementById('formId').value = id || '';
 
             if (id) {
-                const dataCategory = category.startsWith('siswa') ? 'siswa' : category;
+                const dataCategory = category.startsWith('siswa') ? 'siswa' : (category.startsWith('guru') ? 'guru' : category);
                 const person = appData[dataCategory].find(p => p.id === id);
                 if (person) {
                     document.getElementById('inputId').value = person.id;
@@ -2364,78 +2727,136 @@
 
             saveDataLocally().then(() => {
                 closeModal('academicActionModal');
-                
-                // Navigasi ke menu yang sesuai dengan status barunya
                 if (student.status === 'Lulus') navigate('siswa_lulus');
                 else if (student.status === 'Mutasi') navigate('siswa_mutasi');
                 else if (student.status === 'Keluar Sekolah') navigate('siswa_keluar');
                 else navigate('siswa_aktif');
-                
                 showToast(`Status ${student.name} diperbarui menjadi: ${student.status}`);
+            });
+        }
+
+        let activeGuruId = null;
+
+        function openGuruActionModal(id) {
+            const guru = appData.guru.find(g => g.id === id);
+            if (!guru) return;
+            activeGuruId = id;
+            document.getElementById('guruModalSubtitle').innerText = `${guru.name} (${guru.id})`;
+            
+            document.getElementById('guruActionType').value = guru.status || 'Aktif';
+            document.getElementById('guruActionDate').value = guru.tglSurat || '';
+            document.getElementById('guruActionDestination').value = guru.sekolahTujuan || '';
+            document.getElementById('guruActionReason').value = guru.alasan || '';
+            
+            updateGuruActionOptions();
+            document.getElementById('guruActionModal').classList.remove('hidden');
+        }
+
+        function updateGuruActionOptions() {
+            const action = document.getElementById('guruActionType').value;
+            const detailsWrapper = document.getElementById('guruActionDetails');
+            const destWrapper = document.getElementById('guruActionDestinationWrapper');
+            
+            if (action === 'Aktif') {
+                detailsWrapper.classList.add('hidden');
+            } else {
+                detailsWrapper.classList.remove('hidden');
+                if (action === 'Mutasi') {
+                    destWrapper.classList.remove('hidden');
+                } else {
+                    destWrapper.classList.add('hidden');
+                }
+            }
+        }
+
+        function saveGuruAction() {
+            const action = document.getElementById('guruActionType').value;
+            const index = appData.guru.findIndex(g => g.id === activeGuruId);
+            if (index === -1) return;
+            
+            appData.guru[index].status = action;
+            
+            if (action === 'Aktif') {
+                appData.guru[index].tglSurat = '';
+                appData.guru[index].sekolahTujuan = '';
+                appData.guru[index].alasan = '';
+            } else {
+                appData.guru[index].tglSurat = document.getElementById('guruActionDate').value;
+                appData.guru[index].alasan = document.getElementById('guruActionReason').value;
+                if (action === 'Mutasi') {
+                    appData.guru[index].sekolahTujuan = document.getElementById('guruActionDestination').value;
+                } else {
+                    appData.guru[index].sekolahTujuan = '';
+                }
+            }
+
+            saveDataLocally().then(() => {
+                closeModal('guruActionModal');
+                if (action === 'Mutasi') navigate('guru_mutasi');
+                else if (action === 'Pensiun') navigate('guru_pensiun');
+                else if (action === 'Berhenti') navigate('guru_berhenti');
+                else navigate('guru_aktif');
+                
+                showToast(`Riwayat ${appData.guru[index].name} disimpan sebagai: ${action}`);
             });
         }
 
         function openSekolahDocModal(category) {
             document.getElementById('sekolahDocCategory').value = category;
             document.getElementById('sekolahDocForm').reset();
-            document.getElementById('sekolahFileNameDisplay').innerText = 'Klik untuk memilih file';
-            document.getElementById('sekolahFileNameDisplay').className = 'text-indigo-600';
-            selectedSekolahFile = null;
-            document.getElementById('sekolahDocModalTitle').innerText = category === 'sk' ? 'Upload SK Sekolah' : (category === 'suratMasuk' ? 'Upload Surat Masuk' : 'Upload Surat Keluar');
+            document.getElementById('sekolahDocModalTitle').innerText = category === 'sk' ? 'Tambah SK Sekolah' : (category === 'suratMasuk' ? 'Tambah Surat Masuk' : 'Tambah Surat Keluar');
             document.getElementById('sekolahDocModal').classList.remove('hidden');
         }
 
-        function handleSekolahFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.size > 200 * 1024) { showAppDialog('alert', 'File Terlalu Besar', 'Maksimal 200KB.'); event.target.value = ''; return; }
-                selectedSekolahFile = file;
-                document.getElementById('sekolahFileNameDisplay').innerText = file.name;
-                document.getElementById('sekolahFileNameDisplay').className = 'text-gray-800 font-semibold';
-            }
-        }
-
         async function saveSekolahDoc() {
-            if (!selectedSekolahFile) { showAppDialog('alert', 'Pilih File', 'Silakan unggah file terlebih dahulu!'); return; }
             const category = document.getElementById('sekolahDocCategory').value;
-            const noSurat = document.getElementById('inputNoSurat').value;
-            const perihal = document.getElementById('inputPerihal').value;
+            const noSurat = document.getElementById('inputNoSurat').value.trim();
+            const perihal = document.getElementById('inputPerihal').value.trim();
             const tanggal = document.getElementById('inputTanggalSurat').value;
-            if (!noSurat || !perihal || !tanggal) { showAppDialog('alert', 'Tidak Lengkap', 'Lengkapi Nomor Surat, Perihal, dan Tanggal.'); return; }
+            const docUrl = document.getElementById('inputSekolahDocUrl').value.trim();
+            
+            if (!noSurat || !perihal || !tanggal || !docUrl) { 
+                showAppDialog('alert', 'Tidak Lengkap', 'Silakan lengkapi semua isian termasuk Link Google Drive.'); 
+                return; 
+            }
 
             const btn = document.getElementById('btnUploadSekolahDoc');
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             btn.disabled = true;
 
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const newDoc = { id: Date.now(), noSurat: noSurat, perihal: perihal, tanggal: tanggal, fileName: selectedSekolahFile.name, data: e.target.result };
+            try {
+                const newDoc = { 
+                    id: Date.now(), 
+                    noSurat: noSurat, 
+                    perihal: perihal, 
+                    tanggal: tanggal, 
+                    fileName: 'Arsip (GDrive)', 
+                    data: docUrl 
+                };
+                
                 if (!appData.dokumenSekolah[category]) appData.dokumenSekolah[category] = [];
                 appData.dokumenSekolah[category].push(newDoc);
                 
-                try {
-                    await saveDataLocally();
-                    btn.innerHTML = originalHtml; btn.disabled = false;
-                    closeModal('sekolahDocModal');
-                    renderContent(category);
-                } catch (error) {
-                    appData.dokumenSekolah[category].pop();
-                    showAppDialog('alert', 'Gagal', 'Kapasitas database penuh.');
-                    btn.innerHTML = originalHtml; btn.disabled = false;
-                }
-            };
-            reader.readAsDataURL(selectedSekolahFile);
+                await saveDataLocally();
+                closeModal('sekolahDocModal');
+                renderContent(category);
+                showToast('Arsip berhasil ditambahkan', 'success');
+            } catch (error) {
+                showAppDialog('alert', 'Gagal', 'Gagal menyimpan arsip.');
+            } finally {
+                btn.innerHTML = originalHtml; btn.disabled = false;
+            }
         }
 
         function downloadSekolahDoc(category, id) {
             const doc = appData.dokumenSekolah[category].find(d => d.id === id);
             if (!doc || !doc.data) return;
-            const a = document.createElement('a'); a.href = doc.data; a.download = doc.fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            window.open(doc.data, '_blank');
         }
 
         function deleteSekolahDoc(category, id) {
-            showAppDialog('confirm', 'Hapus Arsip?', 'Hapus permanen arsip ini?', () => {
+            showAppDialog('confirm', 'Hapus Arsip?', 'Hapus arsip ini dari daftar?', async () => {
                 appData.dokumenSekolah[category] = appData.dokumenSekolah[category].filter(d => d.id !== id);
                 saveDataLocally().then(() => renderContent(category));
             });
@@ -2476,7 +2897,7 @@
         }
         initPWA();
 
-        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.handleFileSelect = handleFileSelect; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateCustomSurat = generateCustomSurat; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openSekolahDocModal = openSekolahDocModal; window.handleSekolahFileSelect = handleSekolahFileSelect; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc;
+        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateCustomSurat = generateCustomSurat; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openGuruActionModal = openGuruActionModal; window.updateGuruActionOptions = updateGuruActionOptions; window.saveGuruAction = saveGuruAction; window.openSekolahDocModal = openSekolahDocModal; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc;
 
         window.triggerRender = function() { if (typeof renderContent === 'function' && typeof currentCategory !== 'undefined') renderContent(currentCategory); };
 
@@ -2491,8 +2912,8 @@
             });
             
             if (typeof initCloud === 'function') initCloud();
-            if (isLoggedIn === 'true') { loginScreen.classList.add('hidden'); initApp(); } 
-            else { loginScreen.classList.remove('hidden', 'opacity-0'); }
+            if (isLoggedIn === 'true') { if(loginScreen) loginScreen.classList.add('hidden'); initApp(); } 
+            else { if(loginScreen) loginScreen.classList.remove('hidden', 'opacity-0'); }
         };
 
         function logout() { sessionStorage.clear(); location.reload(); }
@@ -2504,14 +2925,12 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-  apiKey: "AIzaSyAArJD8jaaTf6sr2ERe7kOCKspGEhSTMmY",
-  authDomain: "siakad-smpn6-mamosalato-c6915.firebaseapp.com",
-  projectId: "siakad-smpn6-mamosalato-c6915",
-  storageBucket: "siakad-smpn6-mamosalato-c6915.firebasestorage.app",
-  messagingSenderId: "197127605853",
-  appId: "1:197127605853:web:0fa1132fb717f731e507b4"
-};
-
+            apiKey: "AIzaSyAARJD8jaaTf6sr2ERe7k0CKspGEhSTMmY",
+            authDomain: "siakad-smpn6-mamosalato-c6915.firebaseapp.com",
+            projectId: "siakad-smpn6-mamosalato-c6915",
+            messagingSenderId: "197127605853",
+            appId: "1:197127605853:web:0fa1132fb717f731e507b4"
+        };
         
         window.initCloud = async function() {
             try {
@@ -2546,10 +2965,10 @@
                     try { await setDoc(docRef, data); } 
                     catch (e) {
                         if(e.code === 'resource-exhausted') {
-                            if(typeof window.showAppDialog === 'function') window.showAppDialog('alert', 'Kapasitas Penuh', 'Kapasitas penyimpanan sistem penuh.');
+                            if(typeof window.showAppDialog === 'function') window.showAppDialog('alert', 'Kapasitas Penuh', 'Kapasitas penyimpanan database telah penuh. Silakan hapus data yang tidak diperlukan.');
                             else alert('Kapasitas penyimpanan sistem penuh.');
                         }
-                        throw e; // Pass error up so UI can catch it
+                        throw e;
                     }
                 };
 
