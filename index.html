@@ -215,6 +215,12 @@
                     </a>
                 </li>
                 
+                <li id="li-kalender">
+                    <a href="#" onclick="navigate('kalender')" id="nav-kalender" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors border-l-4 border-transparent">
+                        <i class="fas fa-calendar-day w-5"></i> Kalender Pendidikan
+                    </a>
+                </li>
+                
                 <li id="li-buat-surat" class="mt-4">
                     <button onclick="toggleSubMenu('buatSuratSubMenu', 'buatSuratChevron')" class="w-full flex items-center justify-between px-6 py-2 text-xs font-semibold text-blue-400 uppercase tracking-wider hover:text-white transition-colors focus:outline-none">
                         <span>Buat Surat</span>
@@ -598,6 +604,55 @@
         </div>
     </div>
 
+    <!-- Modal Kalender Pendidikan -->
+    <div id="kalenderModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto flex flex-col max-h-full fade-in">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-fuchsia-50 rounded-t-xl">
+                <h3 id="kalenderModalTitle" class="text-lg font-semibold text-fuchsia-900">Tambah Agenda</h3>
+                <button onclick="closeModal('kalenderModal')" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <form id="kalenderForm" class="space-y-4">
+                    <input type="hidden" id="kalenderId">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai *</label>
+                            <input type="date" id="inputKalenderDate" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sampai Tanggal (Opsional)</label>
+                            <input type="date" id="inputKalenderEndDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Agenda / Kegiatan *</label>
+                        <input type="text" id="inputKalenderTitle" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all" placeholder="Contoh: Ujian Tengah Semester">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kegiatan *</label>
+                        <select id="inputKalenderType" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all">
+                            <option value="Akademik">Akademik / Pembelajaran</option>
+                            <option value="Ujian">Ujian / Evaluasi</option>
+                            <option value="Libur">Hari Libur</option>
+                            <option value="Kegiatan Sekolah">Kegiatan Sekolah (Lomba, Porseni, dll)</option>
+                            <option value="Rapat">Rapat / Pertemuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan (Opsional)</label>
+                        <textarea id="inputKalenderDesc" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all" placeholder="Detail kegiatan..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="p-5 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-xl">
+                <button onclick="closeModal('kalenderModal')" class="px-5 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium">Batal</button>
+                <button onclick="saveKalender()" class="px-5 py-2 text-white bg-fuchsia-600 rounded-lg hover:bg-fuchsia-700 transition-colors shadow-sm font-medium flex items-center gap-2"><i class="fas fa-save"></i> Simpan Agenda</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Dialog Modal -->
     <div id="customDialogModal" class="fixed inset-0 modal-overlay hidden z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto flex flex-col fade-in">
@@ -792,7 +847,8 @@
             siswa: [],
             kelas: { 'VII': ['VII'], 'VIII': ['VIII'], 'IX': ['IX'] },
             dokumenSekolah: { sk: [], suratMasuk: [], suratKeluar: [] },
-            pengaturan: { logoKiri: null, logoKanan: null }
+            pengaturan: { logoKiri: null, logoKanan: null },
+            kalender: []
         };
         
         let currentCategory = 'dashboard';
@@ -821,6 +877,7 @@
             siswa_keluar: { title: 'Siswa Berhenti / Keluar', icon: 'fa-user-times', color: 'text-red-600', bg: 'bg-red-100' },
             input_nilai: { title: 'Input Nilai Siswa', icon: 'fa-edit', color: 'text-indigo-600', bg: 'bg-indigo-100' },
             jadwal: { title: 'Jadwal Pelajaran', icon: 'fa-calendar-alt', color: 'text-cyan-600', bg: 'bg-cyan-100' },
+            kalender: { title: 'Kalender Pendidikan', icon: 'fa-calendar-day', color: 'text-fuchsia-600', bg: 'bg-fuchsia-100' },
             sk: { title: 'Surat Keputusan (SK)', icon: 'fa-file-signature', color: 'text-rose-600', bg: 'bg-rose-100', type: 'sekolah' },
             suratMasuk: { title: 'Surat Masuk', icon: 'fa-inbox', color: 'text-teal-600', bg: 'bg-teal-100', type: 'sekolah' },
             suratKeluar: { title: 'Surat Keluar', icon: 'fa-paper-plane', color: 'text-amber-600', bg: 'bg-amber-100', type: 'sekolah' }
@@ -840,6 +897,7 @@
                     if (!appData.waliKelas) appData.waliKelas = {};
                     if (!appData.nilai) appData.nilai = {};
                     if (!appData.jadwal) appData.jadwal = {};
+                    if (!appData.kalender) appData.kalender = [];
                     saveDataLocally();
                 } catch(e) { console.error("Data error on init", e); seedData(); }
             } else {
@@ -891,6 +949,10 @@
             ];
             appData.nilai = {};
             appData.jadwal = {};
+            appData.kalender = [
+                { id: 1, date: '2026-07-15', title: 'Hari Pertama Masuk Sekolah', type: 'Akademik', desc: 'Awal tahun ajaran baru 2026/2027.' },
+                { id: 2, date: '2026-08-17', title: 'HUT Kemerdekaan RI', type: 'Libur', desc: 'Upacara bendera dan libur nasional.' }
+            ];
             saveDataLocally();
         }
 
@@ -977,6 +1039,9 @@
             } else if (page === 'jadwal') {
                 title.innerText = 'Jadwal Pelajaran';
                 renderJadwal(main);
+            } else if (page === 'kalender') {
+                title.innerText = 'Kalender Pendidikan';
+                renderKalender(main);
             } else if (page === 'keadaan_pegawai') {
                 title.innerText = 'Daftar Keadaan Pegawai';
                 renderKeadaanPegawai(main);
@@ -1417,6 +1482,70 @@
             const pctAdminL = getPct(adminL, totalAdmin);
             const pctAdminP = getPct(adminP, totalAdmin);
             
+            // --- LOGIKA PENGINGAT KALENDER OTOMATIS ---
+            const todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0); // Menormalkan waktu ke jam 00:00:00
+
+            let alertHtml = '';
+            if (appData.kalender && appData.kalender.length > 0) {
+                const upcomingEvents = appData.kalender.filter(agenda => {
+                    if (!agenda.date) return false;
+                    const startDate = new Date(agenda.date);
+                    startDate.setHours(0, 0, 0, 0);
+                    
+                    const endDate = agenda.endDate ? new Date(agenda.endDate) : new Date(agenda.date);
+                    endDate.setHours(23, 59, 59, 999); // Sampai detik terakhir di hari H
+                    
+                    // Hitung 1 hari sebelum kegiatan dimulai
+                    const oneDayBefore = new Date(startDate);
+                    oneDayBefore.setDate(oneDayBefore.getDate() - 1);
+                    
+                    // Syarat muncul: Hari ini >= (H-1) DAN Hari ini <= Tanggal Berakhir
+                    return todayDate >= oneDayBefore && todayDate <= endDate;
+                });
+
+                if (upcomingEvents.length > 0) {
+                    alertHtml = '<div class="mt-5 flex flex-col gap-2.5 animate-[fadeIn_0.5s_ease-in-out]">';
+                    upcomingEvents.forEach(agenda => {
+                        const start = new Date(agenda.date);
+                        start.setHours(0, 0, 0, 0);
+                        
+                        let badgeText = 'Sedang Berlangsung';
+                        let badgeClass = 'bg-emerald-500 text-white';
+                        let icon = 'fa-calendar-check';
+                        
+                        if (todayDate < start) {
+                            badgeText = 'Besok!';
+                            badgeClass = 'bg-yellow-400 text-yellow-900';
+                            icon = 'fa-bell animate-bounce';
+                        }
+                        
+                        const opts = { day: 'numeric', month: 'long', year: 'numeric' };
+                        let tglTampil = start.toLocaleDateString('id-ID', opts);
+                        if (agenda.endDate && agenda.endDate !== agenda.date) {
+                            tglTampil += ` s.d. ${new Date(agenda.endDate).toLocaleDateString('id-ID', opts)}`;
+                        }
+                        
+                        alertHtml += `
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3.5 bg-black/15 hover:bg-black/25 transition-colors border border-white/20 p-3.5 rounded-xl backdrop-blur-md shadow-lg">
+                                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 text-yellow-300 shadow-inner">
+                                    <i class="fas ${icon} text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                                        <h4 class="text-white font-bold text-sm tracking-wide">${agenda.title}</h4>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${badgeClass} shadow-sm">${badgeText}</span>
+                                    </div>
+                                    <p class="text-blue-100 text-xs font-medium"><i class="far fa-clock mr-1"></i> ${tglTampil} &nbsp;&bull;&nbsp; ${agenda.type}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    alertHtml += '</div>';
+                }
+            }
+            // --- AKHIR LOGIKA PENGINGAT ---
+            
             let tableSiswaKls = '';
             const semuaKelas = Object.values(appData.kelas).flat();
             let sumL = 0, sumP = 0, sumT = 0;
@@ -1454,12 +1583,13 @@
                     <div class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
                     <div class="absolute bottom-0 right-32 w-24 h-24 bg-blue-300 opacity-20 rounded-full blur-xl"></div>
                     <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-indigo-400 opacity-20 rounded-full blur-2xl"></div>
-                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div>
+                    <div class="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                        <div class="flex-1">
                             <h2 class="text-2xl sm:text-3xl font-black mb-2 tracking-tight">Selamat Datang, ${name}! 👋</h2>
                             <p class="text-blue-100 text-sm sm:text-base max-w-xl font-medium leading-relaxed">Anda masuk sebagai <span class="bg-white/20 px-2 py-0.5 rounded text-white font-bold backdrop-blur-sm shadow-sm">${role}</span>. Berikut ringkasan data akademik SMPN 6 Mamosalato.</p>
+                            ${alertHtml}
                         </div>
-                        <div class="inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-xl text-sm font-semibold border border-white/10 shadow-inner w-max">
+                        <div class="inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-xl text-sm font-semibold border border-white/10 shadow-inner w-max h-max shrink-0 mt-2 md:mt-0">
                             <i class="far fa-calendar-alt text-blue-200"></i> ${todayStr}
                         </div>
                     </div>
@@ -2349,6 +2479,156 @@
             else desc = `Perlu bimbingan lebih lanjut dan remedial secara intensif dalam memahami capaian pembelajaran materi ${subjectName}.`;
             
             target.innerText = desc;
+        }
+
+        function renderKalender(container) {
+            const role = sessionStorage.getItem('siakad_role') || '';
+            const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
+            
+            let html = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-fuchsia-100 text-fuchsia-600 p-3 rounded-lg"><i class="fas fa-calendar-day text-xl"></i></div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Kalender Pendidikan</h2>
+                            <p class="text-sm text-gray-500">Jadwal kegiatan akademik, ujian, dan hari libur sekolah.</p>
+                        </div>
+                    </div>
+                    ${isAdmin ? `<button onclick="openKalenderModal()" class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"><i class="fas fa-plus"></i> Tambah Agenda</button>` : ''}
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6 p-2 sm:p-4">
+            `;
+            
+            if (!appData.kalender || appData.kalender.length === 0) {
+                html += `<div class="p-8 text-center text-gray-500">Belum ada agenda pendidikan yang ditambahkan.</div>`;
+            } else {
+                const sortedKalender = [...appData.kalender].sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                html += `<div class="relative border-l-2 border-fuchsia-100 ml-3 sm:ml-6 mt-4 mb-4 space-y-6">`;
+                
+                sortedKalender.forEach(agenda => {
+                    const dateObj = new Date(agenda.date);
+                    const day = dateObj.toLocaleDateString('id-ID', { day: 'numeric' });
+                    const monthYear = dateObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                    const weekday = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
+                    
+                    let dateDisplay = `${weekday}, ${day} ${monthYear}`;
+                    
+                    if (agenda.endDate && agenda.endDate !== agenda.date) {
+                        const endDateObj = new Date(agenda.endDate);
+                        const endDay = endDateObj.toLocaleDateString('id-ID', { day: 'numeric' });
+                        const endMonthYear = endDateObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                        
+                        if (monthYear === endMonthYear) {
+                            dateDisplay = `${day} - ${endDay} ${monthYear}`;
+                        } else {
+                            dateDisplay = `${day} ${dateObj.toLocaleDateString('id-ID', { month: 'short' })} - ${endDay} ${endDateObj.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}`;
+                        }
+                    }
+                    
+                    let typeColor = 'bg-gray-100 text-gray-600 border-gray-200';
+                    let icon = 'fa-calendar-check';
+                    
+                    if (agenda.type === 'Libur') { typeColor = 'bg-red-50 text-red-600 border-red-200'; icon = 'fa-umbrella-beach'; }
+                    else if (agenda.type === 'Ujian') { typeColor = 'bg-orange-50 text-orange-600 border-orange-200'; icon = 'fa-pencil-alt'; }
+                    else if (agenda.type === 'Kegiatan Sekolah') { typeColor = 'bg-blue-50 text-blue-600 border-blue-200'; icon = 'fa-running'; }
+                    else if (agenda.type === 'Rapat') { typeColor = 'bg-purple-50 text-purple-600 border-purple-200'; icon = 'fa-users'; }
+                    else { typeColor = 'bg-emerald-50 text-emerald-600 border-emerald-200'; icon = 'fa-book-reader'; }
+
+                    html += `
+                        <div class="relative pl-6 sm:pl-8 group">
+                            <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-4 border-white bg-fuchsia-500 shadow-sm group-hover:scale-125 transition-transform"></div>
+                            
+                            <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative">
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                    <div>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold border ${typeColor} mb-2 uppercase tracking-wider">
+                                            <i class="fas ${icon}"></i> ${agenda.type}
+                                        </span>
+                                        <h3 class="font-bold text-gray-800 text-base sm:text-lg">${agenda.title}</h3>
+                                        <p class="text-sm text-fuchsia-600 font-semibold mt-1"><i class="far fa-clock mr-1"></i> ${dateDisplay}</p>
+                                    </div>
+                                    ${isAdmin ? `
+                                    <div class="flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity absolute sm:relative top-4 right-4 sm:top-0 sm:right-0">
+                                        <button onclick="openKalenderModal(${agenda.id})" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded transition-colors" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button onclick="deleteKalender(${agenda.id})" class="text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors" title="Hapus"><i class="fas fa-trash"></i></button>
+                                    </div>` : ''}
+                                </div>
+                                ${agenda.desc ? `<p class="text-gray-500 text-sm mt-2 pt-2 border-t border-gray-50">${agenda.desc}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function openKalenderModal(id = null) {
+            document.getElementById('kalenderForm').reset();
+            document.getElementById('kalenderId').value = id || '';
+            document.getElementById('kalenderModalTitle').innerText = id ? 'Edit Agenda' : 'Tambah Agenda';
+            
+            if (id) {
+                const agenda = appData.kalender.find(a => a.id === id);
+                if (agenda) {
+                    document.getElementById('inputKalenderDate').value = agenda.date;
+                    document.getElementById('inputKalenderEndDate').value = agenda.endDate || '';
+                    document.getElementById('inputKalenderTitle').value = agenda.title;
+                    document.getElementById('inputKalenderType').value = agenda.type;
+                    document.getElementById('inputKalenderDesc').value = agenda.desc || '';
+                }
+            }
+            
+            document.getElementById('kalenderModal').classList.remove('hidden');
+        }
+
+        function saveKalender() {
+            const id = document.getElementById('kalenderId').value;
+            const date = document.getElementById('inputKalenderDate').value;
+            const endDate = document.getElementById('inputKalenderEndDate').value;
+            const title = document.getElementById('inputKalenderTitle').value.trim();
+            const type = document.getElementById('inputKalenderType').value;
+            const desc = document.getElementById('inputKalenderDesc').value.trim();
+            
+            if (!date || !title || !type) {
+                showAppDialog('alert', 'Gagal', 'Tanggal Mulai, Nama Agenda, dan Jenis Kegiatan wajib diisi.');
+                return;
+            }
+
+            if (endDate && new Date(endDate) < new Date(date)) {
+                showAppDialog('alert', 'Gagal', 'Tanggal Berakhir tidak boleh lebih awal dari Tanggal Mulai.');
+                return;
+            }
+            
+            if (!appData.kalender) appData.kalender = [];
+            
+            if (id) {
+                const index = appData.kalender.findIndex(a => a.id == id);
+                if (index > -1) {
+                    appData.kalender[index] = { id: Number(id), date, endDate, title, type, desc };
+                }
+            } else {
+                appData.kalender.push({ id: Date.now(), date, endDate, title, type, desc });
+            }
+            
+            saveDataLocally().then(() => {
+                closeModal('kalenderModal');
+                renderKalender(document.getElementById('mainContent'));
+                showToast('Agenda berhasil disimpan', 'success');
+            });
+        }
+
+        function deleteKalender(id) {
+            showAppDialog('confirm', 'Hapus Agenda?', 'Agenda kegiatan ini akan dihapus secara permanen dari kalender pendidikan.', () => {
+                appData.kalender = appData.kalender.filter(a => a.id !== id);
+                saveDataLocally().then(() => {
+                    renderKalender(document.getElementById('mainContent'));
+                });
+            });
         }
 
         function renderSuratBuilder(page, container) {
@@ -3428,7 +3708,7 @@
         }
         initPWA();
 
-        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openPegawaiActionModal = openPegawaiActionModal; window.updatePegawaiActionOptions = updatePegawaiActionOptions; window.savePegawaiAction = savePegawaiAction; window.openSekolahDocModal = openSekolahDocModal; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc; window.renderInputNilai = renderInputNilai; window.updateInputNilaiSiswaList = updateInputNilaiSiswaList; window.saveNilaiSiswa = saveNilaiSiswa; window.renderJadwal = renderJadwal; window.updateJadwalTable = updateJadwalTable; window.saveJadwal = saveJadwal; window.printJadwal = printJadwal;
+        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openPegawaiActionModal = openPegawaiActionModal; window.updatePegawaiActionOptions = updatePegawaiActionOptions; window.savePegawaiAction = savePegawaiAction; window.openSekolahDocModal = openSekolahDocModal; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc; window.renderInputNilai = renderInputNilai; window.updateInputNilaiSiswaList = updateInputNilaiSiswaList; window.saveNilaiSiswa = saveNilaiSiswa; window.renderJadwal = renderJadwal; window.updateJadwalTable = updateJadwalTable; window.saveJadwal = saveJadwal; window.printJadwal = printJadwal; window.renderKalender = renderKalender; window.openKalenderModal = openKalenderModal; window.saveKalender = saveKalender; window.deleteKalender = deleteKalender;
 
         window.triggerRender = function() { if (typeof renderContent === 'function' && typeof currentCategory !== 'undefined') renderContent(currentCategory); };
 
