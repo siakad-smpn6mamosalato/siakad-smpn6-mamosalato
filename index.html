@@ -283,6 +283,11 @@
                         <span class="flex items-center gap-3"><i class="fas fa-images w-4"></i> Pengaturan Logo</span>
                     </a>
                 </li>
+                <li id="li-profil_sekolah">
+                    <a href="#" onclick="navigate('profil_sekolah')" id="nav-profil_sekolah" class="nav-link flex items-center justify-between px-6 py-2 text-xs font-semibold text-blue-400 uppercase tracking-wider hover:text-white hover:bg-blue-800 transition-colors border-l-4 border-transparent focus:outline-none">
+                        <span class="flex items-center gap-3"><i class="fas fa-school w-4"></i> Profil Sekolah</span>
+                    </a>
+                </li>
             </ul>
         </nav>
         <div class="p-4 text-xs text-blue-400 border-t border-blue-800 text-center">
@@ -848,7 +853,8 @@
             kelas: { 'VII': ['VII'], 'VIII': ['VIII'], 'IX': ['IX'] },
             dokumenSekolah: { sk: [], suratMasuk: [], suratKeluar: [] },
             pengaturan: { logoKiri: null, logoKanan: null },
-            kalender: []
+            kalender: [],
+            profilSekolah: {}
         };
         
         let currentCategory = 'dashboard';
@@ -880,7 +886,8 @@
             kalender: { title: 'Kalender Pendidikan', icon: 'fa-calendar-day', color: 'text-fuchsia-600', bg: 'bg-fuchsia-100' },
             sk: { title: 'Surat Keputusan (SK)', icon: 'fa-file-signature', color: 'text-rose-600', bg: 'bg-rose-100', type: 'sekolah' },
             suratMasuk: { title: 'Surat Masuk', icon: 'fa-inbox', color: 'text-teal-600', bg: 'bg-teal-100', type: 'sekolah' },
-            suratKeluar: { title: 'Surat Keluar', icon: 'fa-paper-plane', color: 'text-amber-600', bg: 'bg-amber-100', type: 'sekolah' }
+            suratKeluar: { title: 'Surat Keluar', icon: 'fa-paper-plane', color: 'text-amber-600', bg: 'bg-amber-100', type: 'sekolah' },
+            profil_sekolah: { title: 'Profil Sekolah', icon: 'fa-school', color: 'text-indigo-600', bg: 'bg-indigo-100' }
         };
 
         function initApp() {
@@ -898,6 +905,13 @@
                     if (!appData.nilai) appData.nilai = {};
                     if (!appData.jadwal) appData.jadwal = {};
                     if (!appData.kalender) appData.kalender = [];
+                    if (!appData.profilSekolah) {
+                        appData.profilSekolah = {
+                            nama: 'SMP NEGERI 6 MAMOSALATO', npsn: '70053044', alamat: 'Jln.H. Lawanreng Kec.Mamosalato',
+                            kodepos: '94968', email: 'smpnegeri6mamosalato@gmail.com', website: '-', desa: 'Mamosalato',
+                            kecamatan: 'Mamosalato', kabupaten: 'Morowali Utara', provinsi: 'Sulawesi Tengah', telepon: '-'
+                        };
+                    }
                     saveDataLocally();
                 } catch(e) { console.error("Data error on init", e); seedData(); }
             } else {
@@ -921,7 +935,7 @@
             const elementsToHideForGuru = [
                 'label-data-induk', 'li-kepsek', 'li-guru', 'li-admin', 
                 'li-wali_kelas', 'li-keadaan_pegawai', 'li-buat-surat',
-                'buatSuratSubMenu', 'li-arsip', 'arsipSubMenu', 'li-pengaturan'
+                'buatSuratSubMenu', 'li-arsip', 'arsipSubMenu', 'li-pengaturan', 'li-profil_sekolah'
             ];
 
             elementsToHideForGuru.forEach(id => {
@@ -970,7 +984,7 @@
         function navigate(page) {
             const role = sessionStorage.getItem('siakad_role');
             if (role === 'Guru') {
-                const restrictedPages = ['kepsek', 'guru_aktif', 'guru_mutasi', 'guru_pensiun', 'guru_berhenti', 'admin_aktif', 'admin_mutasi', 'admin_pensiun', 'admin_berhenti', 'wali_kelas', 'keadaan_pegawai', 'pengaturan_logo'];
+                const restrictedPages = ['kepsek', 'guru_aktif', 'guru_mutasi', 'guru_pensiun', 'guru_berhenti', 'admin_aktif', 'admin_mutasi', 'admin_pensiun', 'admin_berhenti', 'wali_kelas', 'keadaan_pegawai', 'pengaturan_logo', 'profil_sekolah'];
                 if (restrictedPages.includes(page) || page.startsWith('surat_') || page.startsWith('sk_') || (categoryMap[page] && categoryMap[page].type === 'sekolah')) {
                     showAppDialog('alert', 'Akses Ditolak', 'Maaf, menu ini bersifat rahasia dan hanya dapat diakses oleh Administrator / Kepala Sekolah.');
                     return;
@@ -1048,6 +1062,9 @@
             } else if (page === 'pengaturan_logo') {
                 title.innerText = 'Pengaturan Logo & Identitas';
                 renderPengaturanLogo(main);
+            } else if (page === 'profil_sekolah') {
+                title.innerText = 'Profil Sekolah';
+                renderProfilSekolah(main);
             } else if (page.startsWith('siswa_')) {
                 const catInfo = categoryMap[page];
                 title.innerText = catInfo.title;
@@ -2134,16 +2151,44 @@
                 gridHtml += `</tbody></table></div>`;
             });
 
+            // Ambil Data Profil Sekolah & Logo untuk Kop
+            const prof = appData.profilSekolah || {};
+            const namaSekolah = prof.nama || 'SMP NEGERI 6 MAMOSALATO';
+            const npsn = prof.npsn || '70053044';
+            const alamat = prof.alamat || 'Jln.H. Lawanreng Kec.Mamosalato';
+            const kodepos = prof.kodepos || '94968';
+            const email = prof.email || 'smpnegeri6mamosalato@gmail.com';
+            
+            const logoKiri = appData.pengaturan.logoKiri ? `<img src="${appData.pengaturan.logoKiri}" style="width: 85px; height: 85px; object-fit: contain;">` : '';
+            const logoKanan = appData.pengaturan.logoKanan ? `<img src="${appData.pengaturan.logoKanan}" style="width: 85px; height: 85px; object-fit: contain;">` : '';
+
+            const kopSurat = `
+                <table style="width: 100%; border-bottom: 3px double black; padding-bottom: 5px; margin-bottom: 15px; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 12%; text-align: left; vertical-align: middle;">${logoKiri}</td>
+                        <td style="width: 76%; text-align: center; vertical-align: middle;">
+                            <h2 style="margin: 0; font-size: 14pt; text-transform: uppercase;">PEMERINTAH KABUPATEN MOROWALI UTARA</h2>
+                            <h1 style="margin: 0; font-size: 15pt; font-weight: bold; text-transform: uppercase; white-space: nowrap;">DINAS PENDIDIKAN DAN KEBUDAYAAN DAERAH</h1>
+                            <h1 style="margin: 0; font-size: 18pt; font-weight: bold;">${namaSekolah}</h1>
+                            <p style="margin: 5px 0 0 0; font-size: 10pt;">${alamat} Kode Pos.${kodepos}</p>
+                            <p style="margin: 2px 0 0 0; font-size: 10pt;">Email.${email}, NPSN.${npsn}</p>
+                        </td>
+                        <td style="width: 12%; text-align: right; vertical-align: middle;">${logoKanan}</td>
+                    </tr>
+                </table>
+            `;
+
             const printContent = `
-                <div style="padding: 20px; font-family: 'Times New Roman', Times, serif; color: black; background: white; width: 100%; box-sizing: border-box;">
+                <div style="padding: 10px 20px; font-family: 'Times New Roman', Times, serif; color: black; background: white; width: 100%; box-sizing: border-box;">
+                    ${kopSurat}
                     <h2 style="text-align: center; text-transform: uppercase; margin-bottom: 5px; font-size: 16pt; font-weight: bold;">JADWAL PELAJARAN KELAS ${cls}</h2>
-                    <h3 style="text-align: center; text-transform: uppercase; margin-top: 0; margin-bottom: 30px; font-size: 14pt; font-weight: bold;">SMP NEGERI 6 MAMOSALATO<br>TAHUN PELAJARAN 2026/2027</h3>
+                    <h3 style="text-align: center; text-transform: uppercase; margin-top: 0; margin-bottom: 25px; font-size: 14pt; font-weight: bold;">TAHUN PELAJARAN 2026/2027</h3>
                     
                     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; width: 100%;">
                         ${gridHtml}
                     </div>
 
-                    <div style="display: flex; justify-content: flex-end; margin-top: 30px; break-inside: avoid;">
+                    <div style="display: flex; justify-content: flex-end; margin-top: 20px; break-inside: avoid;">
                         <div style="text-align: center; width: 300px;">
                             <p style="margin: 0; font-size: 12pt;">Mamosalato, ${dateStr}</p>
                             <p style="margin: 0; margin-bottom: 70px; font-size: 12pt;">Kepala Sekolah,</p>
@@ -2296,6 +2341,19 @@
             const coverLogo = appData.pengaturan.logoKanan || 'https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png';
             const subjects = ["Pend. Agama & Budi Pekerti", "Pendidikan Pancasila", "Bahasa Indonesia", "Matematika", "Ilmu Pengetahuan Alam (IPA)", "Ilmu Pengetahuan Sosial (IPS)", "Bahasa Inggris", "PJOK", "Informatika", "Seni Budaya"];
 
+            const prof = appData.profilSekolah || {};
+            const namaSekolah = prof.nama || 'SMP NEGERI 6 MAMOSALATO';
+            const npsn = prof.npsn || '70053044';
+            const alamat = prof.alamat || 'Kecamatan Mamosalato, Kab. Morowali Utara';
+            const kodepos = prof.kodepos || '94968';
+            const telp = prof.telepon || '-';
+            const kelurahan = prof.desa || 'Mamosalato';
+            const kecamatan = prof.kecamatan || 'Mamosalato';
+            const kabupaten = prof.kabupaten || 'Morowali Utara';
+            const provinsi = prof.provinsi || 'Sulawesi Tengah';
+            const website = prof.website || '-';
+            const email = prof.email || 'smpnegeri6mamosalato@gmail.com';
+
             let tableRows = '';
             subjects.forEach((mapel, index) => {
                 const studentGrades = (appData.nilai && appData.nilai[student.id]) ? appData.nilai[student.id] : {};
@@ -2368,17 +2426,17 @@
                     <h2 style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 40px; margin-bottom: 50px;">RAPOR PESERTA DIDIK DAN<br>PROFIL PESERTA DIDIK</h2>
                     
                     <table style="width: 85%; margin: 0 auto; font-size: 12pt; line-height: 2;">
-                        <tr><td style="width: 35%;">Nama Sekolah</td><td style="width: 5%;">:</td><td style="font-weight: bold;">SMP NEGERI 6 MAMOSALATO</td></tr>
-                        <tr><td>NPSN</td><td>:</td><td><span contenteditable="true" class="input-rapor">69931393</span></td></tr>
-                        <tr><td style="vertical-align: top;">Alamat Sekolah</td><td style="vertical-align: top;">:</td><td>Kecamatan Mamosalato, Kab. Morowali Utara</td></tr>
-                        <tr><td>Kode Pos</td><td>:</td><td><span contenteditable="true" class="input-rapor">94967</span></td></tr>
-                        <tr><td>Telp/Fax</td><td>:</td><td><span contenteditable="true" class="input-rapor">-</span></td></tr>
-                        <tr><td>Kelurahan/Desa</td><td>:</td><td><span contenteditable="true" class="input-rapor">Mamosalato</span></td></tr>
-                        <tr><td>Kecamatan</td><td>:</td><td>Mamosalato</td></tr>
-                        <tr><td>Kabupaten/Kota</td><td>:</td><td>Morowali Utara</td></tr>
-                        <tr><td>Provinsi</td><td>:</td><td>Sulawesi Tengah</td></tr>
-                        <tr><td>Website</td><td>:</td><td><span contenteditable="true" class="input-rapor">-</span></td></tr>
-                        <tr><td>Email</td><td>:</td><td><span contenteditable="true" class="input-rapor">-</span></td></tr>
+                        <tr><td style="width: 35%;">Nama Sekolah</td><td style="width: 5%;">:</td><td style="font-weight: bold;">${namaSekolah}</td></tr>
+                        <tr><td>NPSN</td><td>:</td><td><span contenteditable="true" class="input-rapor">${npsn}</span></td></tr>
+                        <tr><td style="vertical-align: top;">Alamat Sekolah</td><td style="vertical-align: top;">:</td><td>${alamat}</td></tr>
+                        <tr><td>Kode Pos</td><td>:</td><td><span contenteditable="true" class="input-rapor">${kodepos}</span></td></tr>
+                        <tr><td>Telp/Fax</td><td>:</td><td><span contenteditable="true" class="input-rapor">${telp}</span></td></tr>
+                        <tr><td>Kelurahan/Desa</td><td>:</td><td><span contenteditable="true" class="input-rapor">${kelurahan}</span></td></tr>
+                        <tr><td>Kecamatan</td><td>:</td><td>${kecamatan}</td></tr>
+                        <tr><td>Kabupaten/Kota</td><td>:</td><td>${kabupaten}</td></tr>
+                        <tr><td>Provinsi</td><td>:</td><td>${provinsi}</td></tr>
+                        <tr><td>Website</td><td>:</td><td><span contenteditable="true" class="input-rapor">${website}</span></td></tr>
+                        <tr><td>Email</td><td>:</td><td><span contenteditable="true" class="input-rapor">${email}</span></td></tr>
                     </table>
                 </div>
             `;
@@ -2634,7 +2692,7 @@
         function renderSuratBuilder(page, container) {
             const isCustom = page === 'surat_kustom';
             const isSK = page.startsWith('sk_');
-            const isPersonelLetter = ['surat_lolosButuhGuru', 'surat_pindahGuru', 'surat_lolosButuhSiswa', 'surat_pindahSiswa'].includes(page);
+            const isPersonelLetter = ['surat_tugas', 'surat_teguran', 'surat_lolosButuhGuru', 'surat_pindahGuru', 'surat_lolosButuhSiswa', 'surat_pindahSiswa'].includes(page);
             
             let html = `
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -2656,10 +2714,16 @@
                 let options = `<option value="">-- Ketik Manual / Pilih Personel --</option>`;
                 let dataSource = [];
                 
-                if (page === 'surat_pindahGuru') {
-                    const mutasiGuru = appData.guru.filter(g => g.status === 'Mutasi');
-                    const mutasiAdmin = appData.admin.filter(a => a.status === 'Mutasi');
-                    dataSource = [...mutasiGuru, ...mutasiAdmin];
+                if (page === 'surat_pindahGuru' || page === 'surat_tugas' || page === 'surat_teguran') {
+                    const guruData = appData.guru || [];
+                    const adminData = appData.admin || [];
+                    if (page === 'surat_pindahGuru') {
+                        const mutasiGuru = guruData.filter(g => g.status === 'Mutasi');
+                        const mutasiAdmin = adminData.filter(a => a.status === 'Mutasi');
+                        dataSource = [...mutasiGuru, ...mutasiAdmin];
+                    } else {
+                        dataSource = [...guruData, ...adminData];
+                    }
                 } else if (page.includes('Guru') || page === 'sk_guru') {
                     dataSource = appData.guru;
                 } else if (page.includes('Siswa')) {
@@ -2692,7 +2756,7 @@
             let selectedPerson = null;
             if (selectedId) {
                 let dataSource = [];
-                if (page === 'surat_pindahGuru') dataSource = [...appData.guru, ...appData.admin];
+                if (page === 'surat_pindahGuru' || page === 'surat_tugas' || page === 'surat_teguran') dataSource = [...appData.guru, ...appData.admin];
                 else if (page.includes('Guru') || page === 'sk_guru') dataSource = appData.guru;
                 else if (page.includes('Siswa')) dataSource = appData.siswa;
                 else dataSource = appData.admin;
@@ -2708,17 +2772,25 @@
             const kepsekName = appData.kepsek.length > 0 ? appData.kepsek[0].name : '[Ketik Nama Kepala Sekolah]';
             const kepsekNip = appData.kepsek.length > 0 ? appData.kepsek[0].id : '[Ketik NIP]';
 
+            const prof = appData.profilSekolah || {};
+            const namaSekolah = prof.nama || 'SMP NEGERI 6 MAMOSALATO';
+            const npsn = prof.npsn || '70053044';
+            const alamat = prof.alamat || 'Jln.H. Lawanreng Kec.Mamosalato';
+            const kodepos = prof.kodepos || '94968';
+            const email = prof.email || 'smpnegeri6mamosalato@gmail.com';
+
             const kopSurat = `
                 <table style="width: 100%; border-bottom: 3px double black; padding-bottom: 5px; margin-bottom: 20px; border-collapse: collapse;">
                     <tr>
-                        <td style="width: 15%; text-align: left; vertical-align: middle;">${logoKiri}</td>
-                        <td style="width: 70%; text-align: center; vertical-align: middle;">
+                        <td style="width: 12%; text-align: left; vertical-align: middle;">${logoKiri}</td>
+                        <td style="width: 76%; text-align: center; vertical-align: middle;">
                             <h2 style="margin: 0; font-size: 14pt; text-transform: uppercase;">PEMERINTAH KABUPATEN MOROWALI UTARA</h2>
-                            <h1 style="margin: 0; font-size: 16pt; font-weight: bold; text-transform: uppercase;">DINAS PENDIDIKAN DAN KEBUDAYAAN</h1>
-                            <h1 style="margin: 0; font-size: 18pt; font-weight: bold;">SMP NEGERI 6 MAMOSALATO</h1>
-                            <p style="margin: 5px 0 0 0; font-size: 10pt;">Kecamatan Mamosalato, Kab. Morowali Utara</p>
+                            <h1 style="margin: 0; font-size: 15pt; font-weight: bold; text-transform: uppercase; white-space: nowrap;">DINAS PENDIDIKAN DAN KEBUDAYAAN DAERAH</h1>
+                            <h1 style="margin: 0; font-size: 18pt; font-weight: bold;">${namaSekolah}</h1>
+                            <p style="margin: 5px 0 0 0; font-size: 10pt;">${alamat} Kode Pos.${kodepos}</p>
+                            <p style="margin: 2px 0 0 0; font-size: 10pt;">Email.${email}, NPSN.${npsn}</p>
                         </td>
-                        <td style="width: 15%; text-align: right; vertical-align: middle;">${logoKanan}</td>
+                        <td style="width: 12%; text-align: right; vertical-align: middle;">${logoKanan}</td>
                     </tr>
                 </table>
             `;
@@ -2851,9 +2923,34 @@
                 let isiSurat = '';
                 
                 if (type === 'surat_tugas') {
-                     isiSurat = `<p style="text-align: justify;">Kepala SMP Negeri 6 Mamosalato dengan ini menugaskan kepada: <br><br><strong>[Ketik Nama Pegawai]</strong><br>[Ketik Jabatan]<br><br>Untuk melaksanakan tugas [Ketik Rincian Tugas] pada [Ketik Tanggal dan Tempat].</p><p style="text-align: justify;">Demikian Surat Tugas ini dibuat untuk dilaksanakan dengan penuh tanggung jawab.</p>`;
+                     const nama = selectedPerson ? selectedPerson.name : '[Nama Pegawai]';
+                     const nip = selectedPerson ? selectedPerson.id : '[NIP/NIK]';
+                     const jabatan = selectedPerson && selectedPerson.jabatan ? selectedPerson.jabatan : '[Ketik Jabatan]';
+                     isiSurat = `<p style="text-align: justify;">Yang bertanda tangan di bawah ini Kepala SMP Negeri 6 Mamosalato dengan ini menugaskan kepada:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 150px;">Nama Lengkap</td><td>: <strong>${nama}</strong></td></tr>
+                        <tr><td>NIP / NUPTK</td><td>: ${nip}</td></tr>
+                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${jabatan}</span></td></tr>
+                     </table>
+                     <p style="text-align: justify;">Untuk melaksanakan tugas <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Rincian Tugas, misal: Mengikuti Pelatihan Kurikulum Merdeka]</span> yang akan diselenggarakan pada:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 150px;">Tanggal</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Tanggal Kegiatan]</span></td></tr>
+                        <tr><td>Tempat</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Tempat Kegiatan]</span></td></tr>
+                     </table>
+                     <p style="text-align: justify;">Demikian Surat Tugas ini dibuat untuk dilaksanakan dengan penuh tanggung jawab, dan setelah selesai agar menyampaikan laporan pelaksanaannya.</p>`;
                 } else if (type === 'surat_teguran') {
-                     isiSurat = `<p style="text-align: justify;">Berdasarkan hasil evaluasi dan pemantauan kinerja, dengan ini kami memberikan Surat Teguran kepada:<br><br><strong>[Ketik Nama Pegawai]</strong><br>[Ketik Jabatan]<br><br>Teguran ini diberikan atas tindakan pelanggaran kedisiplinan berupa [Ketik Alasan Teguran]. Kami harap Saudara/i dapat memperbaiki kinerja dan kedisiplinan ke depannya.</p><p style="text-align: justify;">Demikian surat teguran ini dibuat untuk menjadi perhatian.</p>`;
+                     const nama = selectedPerson ? selectedPerson.name : '[Nama Pegawai]';
+                     const nip = selectedPerson ? selectedPerson.id : '[NIP/NIK]';
+                     const jabatan = selectedPerson && selectedPerson.jabatan ? selectedPerson.jabatan : '[Ketik Jabatan]';
+                     isiSurat = `<p style="text-align: justify;">Berdasarkan hasil evaluasi dan pemantauan kinerja, dengan ini kami memberikan <strong>Surat Teguran</strong> kepada:</p>
+                     <table style="width: 80%; margin: 15px auto;">
+                        <tr><td style="width: 150px;">Nama Lengkap</td><td>: <strong>${nama}</strong></td></tr>
+                        <tr><td>NIP / NUPTK</td><td>: ${nip}</td></tr>
+                        <tr><td>Jabatan</td><td>: <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">${jabatan}</span></td></tr>
+                     </table>
+                     <p style="text-align: justify;">Teguran ini diberikan atas tindakan pelanggaran kedisiplinan berupa <span contenteditable="true" class="bg-indigo-50 px-1 border-b border-indigo-200 outline-none text-blue-700 print:text-black print:bg-transparent print:border-none">[Ketik Alasan Teguran, misal: Tidak masuk kerja tanpa keterangan]</span>.</p>
+                     <p style="text-align: justify;">Kami harap Saudara/i dapat memperbaiki kinerja dan kedisiplinan ke depannya. Apabila pelanggaran serupa kembali terjadi, akan diproses sesuai dengan peraturan perundang-undangan dan tata tertib yang berlaku.</p>
+                     <p style="text-align: justify;">Demikian surat teguran ini dibuat untuk menjadi perhatian.</p>`;
                 } else if (type === 'surat_lolosButuhGuru') {
                      const nama = selectedPerson ? selectedPerson.name : '[Nama Guru]';
                      const nip = selectedPerson ? selectedPerson.id : '[NIP/NIK]';
@@ -3113,6 +3210,101 @@
             showAppDialog('confirm', 'Hapus Logo?', 'Logo ini akan dihapus dari sistem.', async () => {
                 appData.pengaturan[posisi] = null;
                 saveDataLocally().then(() => renderContent('pengaturan_logo'));
+            });
+        }
+
+        function renderProfilSekolah(container) {
+            const p = appData.profilSekolah || {};
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-indigo-100 text-indigo-600 p-3 rounded-lg"><i class="fas fa-school text-xl"></i></div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Profil Sekolah</h2>
+                            <p class="text-sm text-gray-500">Data ini otomatis terhubung ke cetakan Rapor & Kop Surat.</p>
+                        </div>
+                    </div>
+                    <button onclick="saveProfilSekolah()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fas fa-save"></i> Simpan Profil
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Sekolah</label>
+                        <input type="text" id="profNama" value="${p.nama || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">NPSN</label>
+                        <input type="text" id="profNpsn" value="${p.npsn || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    
+                    <div class="md:col-span-2 border-t border-gray-100 pt-4 mt-2">
+                        <h3 class="font-semibold text-gray-700 mb-2"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>Alamat & Lokasi</h3>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Jalan / Alamat (Kop Surat)</label>
+                        <input type="text" id="profAlamat" value="${p.alamat || ''}" placeholder="Contoh: Jln.H. Lawanreng Kec.Mamosalato" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Desa / Kelurahan</label>
+                        <input type="text" id="profDesa" value="${p.desa || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
+                        <input type="text" id="profKecamatan" value="${p.kecamatan || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten / Kota</label>
+                        <input type="text" id="profKabupaten" value="${p.kabupaten || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+                        <input type="text" id="profProvinsi" value="${p.provinsi || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kode Pos</label>
+                        <input type="text" id="profKodepos" value="${p.kodepos || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div class="md:col-span-2 border-t border-gray-100 pt-4 mt-2">
+                        <h3 class="font-semibold text-gray-700 mb-2"><i class="fas fa-address-book text-blue-500 mr-2"></i>Kontak Institusi</h3>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Sekolah</label>
+                        <input type="email" id="profEmail" value="${p.email || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                        <input type="text" id="profWebsite" value="${p.website || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Telepon / Fax</label>
+                        <input type="text" id="profTelepon" value="${p.telepon || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveProfilSekolah() {
+            appData.profilSekolah = {
+                nama: document.getElementById('profNama').value.trim(),
+                npsn: document.getElementById('profNpsn').value.trim(),
+                alamat: document.getElementById('profAlamat').value.trim(),
+                desa: document.getElementById('profDesa').value.trim(),
+                kecamatan: document.getElementById('profKecamatan').value.trim(),
+                kabupaten: document.getElementById('profKabupaten').value.trim(),
+                provinsi: document.getElementById('profProvinsi').value.trim(),
+                kodepos: document.getElementById('profKodepos').value.trim(),
+                email: document.getElementById('profEmail').value.trim(),
+                website: document.getElementById('profWebsite').value.trim(),
+                telepon: document.getElementById('profTelepon').value.trim()
+            };
+            
+            saveDataLocally().then(() => {
+                showToast('Profil Sekolah berhasil diperbarui!', 'success');
             });
         }
 
@@ -3708,7 +3900,7 @@
         }
         initPWA();
 
-        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openPegawaiActionModal = openPegawaiActionModal; window.updatePegawaiActionOptions = updatePegawaiActionOptions; window.savePegawaiAction = savePegawaiAction; window.openSekolahDocModal = openSekolahDocModal; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc; window.renderInputNilai = renderInputNilai; window.updateInputNilaiSiswaList = updateInputNilaiSiswaList; window.saveNilaiSiswa = saveNilaiSiswa; window.renderJadwal = renderJadwal; window.updateJadwalTable = updateJadwalTable; window.saveJadwal = saveJadwal; window.printJadwal = printJadwal; window.renderKalender = renderKalender; window.openKalenderModal = openKalenderModal; window.saveKalender = saveKalender; window.deleteKalender = deleteKalender;
+        window.handleLogin = handleLogin; window.handleLogout = handleLogout; window.logout = logout; window.navigate = navigate; window.toggleSubMenu = toggleSubMenu; window.openPersonModal = openPersonModal; window.closeModal = closeModal; window.savePerson = savePerson; window.deletePerson = deletePerson; window.editPerson = editPerson; window.openDocumentModal = openDocumentModal; window.uploadDocument = uploadDocument; window.downloadDocument = downloadDocument; window.deleteDocument = deleteDocument; window.setGrade = setGrade; window.setClass = setClass; window.addKelas = addKelas; window.deleteKelas = deleteKelas; window.saveWaliKelas = saveWaliKelas; window.updateRaporSiswaList = updateRaporSiswaList; window.generateRapor = generateRapor; window.updateDeskripsiRapor = updateDeskripsiRapor; window.generateSKTemplate = generateSKTemplate; window.prosesUploadLogo = prosesUploadLogo; window.hapusLogo = hapusLogo; window.executeConfirm = executeConfirm; window.closeAppDialog = closeAppDialog; window.showAppDialog = showAppDialog; window.togglePasswordVisibility = togglePasswordVisibility; window.openAcademicActionModal = openAcademicActionModal; window.updateAcademicActionOptions = updateAcademicActionOptions; window.saveAcademicAction = saveAcademicAction; window.openPegawaiActionModal = openPegawaiActionModal; window.updatePegawaiActionOptions = updatePegawaiActionOptions; window.savePegawaiAction = savePegawaiAction; window.openSekolahDocModal = openSekolahDocModal; window.saveSekolahDoc = saveSekolahDoc; window.downloadSekolahDoc = downloadSekolahDoc; window.deleteSekolahDoc = deleteSekolahDoc; window.renderInputNilai = renderInputNilai; window.updateInputNilaiSiswaList = updateInputNilaiSiswaList; window.saveNilaiSiswa = saveNilaiSiswa; window.renderJadwal = renderJadwal; window.updateJadwalTable = updateJadwalTable; window.saveJadwal = saveJadwal; window.printJadwal = printJadwal; window.renderKalender = renderKalender; window.openKalenderModal = openKalenderModal; window.saveKalender = saveKalender; window.deleteKalender = deleteKalender; window.saveProfilSekolah = saveProfilSekolah;
 
         window.triggerRender = function() { if (typeof renderContent === 'function' && typeof currentCategory !== 'undefined') renderContent(currentCategory); };
 
@@ -3743,7 +3935,6 @@
   messagingSenderId: "197127605853",
   appId: "1:197127605853:web:0fa1132fb717f731e507b4"
 };
-
         
         window.initCloud = async function() {
             try {
