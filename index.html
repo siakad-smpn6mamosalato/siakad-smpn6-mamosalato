@@ -866,6 +866,9 @@
 
         let currentGrade = 'VII';
         let currentClass = 'VII';
+        let activeJadwalClass = ''; // Memori penyimpanan kelas yang sedang diedit jadwalnya
+        let activeNilaiClass = ''; // Memori penyimpanan kelas untuk input nilai
+        let activeNilaiMapel = ''; // Memori penyimpanan mapel untuk input nilai
 
         const categoryMap = {
             kepsek: { title: 'Data Kepala Sekolah', icon: 'fa-user-tie', color: 'text-purple-600', bg: 'bg-purple-100' },
@@ -1766,14 +1769,14 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kelas</label>
                         <select id="nilaiKelasSelect" onchange="updateInputNilaiSiswaList()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
                             <option value="">-- Pilih Kelas --</option>
-                            ${Object.values(appData.kelas).flat().map(cls => `<option value="${cls}">${cls}</option>`).join('')}
+                            ${Object.values(appData.kelas).flat().map(cls => `<option value="${cls}" ${activeNilaiClass === cls ? 'selected' : ''}>${cls}</option>`).join('')}
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
                         <select id="nilaiMapelSelect" onchange="updateInputNilaiSiswaList()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
                             <option value="">-- Pilih Mata Pelajaran --</option>
-                            ${subjects.map(m => `<option value="${m}">${m}</option>`).join('')}
+                            ${subjects.map(m => `<option value="${m}" ${activeNilaiMapel === m ? 'selected' : ''}>${m}</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -1797,12 +1800,20 @@
                 </div>
             `;
             container.innerHTML = html;
+            
+            // Auto-load if memory exists
+            if(activeNilaiClass && activeNilaiMapel) {
+                setTimeout(() => updateInputNilaiSiswaList(), 50);
+            }
         }
 
         function updateInputNilaiSiswaList() {
             const cls = document.getElementById('nilaiKelasSelect').value;
             const mapel = document.getElementById('nilaiMapelSelect').value;
             const tbody = document.getElementById('nilaiSiswaTableBody');
+            
+            activeNilaiClass = cls;
+            activeNilaiMapel = mapel;
             
             if (!cls || !mapel) {
                 tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500">Silakan pilih kelas dan mata pelajaran terlebih dahulu.</td></tr>';
@@ -1907,7 +1918,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kelas</label>
                             <select id="jadwalKelasSelect" onchange="updateJadwalTable()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none">
                                 <option value="">-- Pilih Kelas --</option>
-                                ${Object.values(appData.kelas).flat().map(cls => `<option value="${cls}">${cls}</option>`).join('')}
+                                ${Object.values(appData.kelas).flat().map(cls => `<option value="${cls}" ${activeJadwalClass === cls ? 'selected' : ''}>${cls}</option>`).join('')}
                             </select>
                         </div>
                         ${isAdmin ? `<div class="text-xs text-gray-500 bg-cyan-50 p-2 border border-cyan-100 rounded-lg w-full md:w-auto"><i class="fas fa-lightbulb text-cyan-500 mr-1"></i> <b>Tips:</b> Tiap hari memiliki jam yang bisa diatur terpisah. Ketik <i>"Istirahat"</i> pada jam untuk blok istirahat.</div>` : ''}
@@ -1919,6 +1930,11 @@
                 </div>
             `;
             container.innerHTML = html;
+            
+            // Auto-load if memory exists
+            if(activeJadwalClass) {
+                setTimeout(() => updateJadwalTable(), 50);
+            }
         }
 
         function updateJadwalTable() {
@@ -1926,6 +1942,8 @@
             const container = document.getElementById('jadwalGridContainer');
             const role = sessionStorage.getItem('siakad_role') || '';
             const isAdmin = role.toLowerCase().includes('admin') || role.toLowerCase().includes('super');
+            
+            activeJadwalClass = cls; // Simpan ke memori
             
             if (!cls) {
                 container.className = "w-full";
